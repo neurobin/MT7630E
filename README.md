@@ -14,7 +14,7 @@ Easy installation package for the official driver at http://www.mediatek.com/en/
 
 2 .User Environment
 
-* OS version: Ubuntu 13.04 LTS
+* OS version: Ubuntu 14.04 LTS
 * Linux kernel version: 3.13 and 3.14
 
 3.Installation
