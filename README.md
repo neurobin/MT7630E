@@ -4,7 +4,7 @@ Easy installation package for the official driver at http://www.mediatek.com/en/
 
 
 *******************************************************************************
-            Mediatek MT7630E Combo Linux Driver User Guide
+                        Mediatek MT7630E Combo Linux Driver User Guide
 *******************************************************************************
 
 1. Component
