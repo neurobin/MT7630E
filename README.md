@@ -6,6 +6,7 @@ Easy installation package for the official driver at http://www.mediatek.com/en/
 *******************************************************************************
             Mediatek MT7630E Combo Linux Driver User Guide
 *******************************************************************************
+
 1. Component
 
 * rt2x00: Wi-Fi driver source code
@@ -22,5 +23,7 @@ Easy installation package for the official driver at http://www.mediatek.com/en/
  * Open terminal in this directory or cd to this directory from terminal
  * Type ./install.sh and hit Enter
  * Put your password and wait to finish the process
+ * 
+ The driver will automatically load at startup.... 
 
-N.B: The driver will automatically load at startup....
+N.B: Do not double click on the file and select "run in terminal or run", that won't work..
