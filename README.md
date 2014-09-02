@@ -27,6 +27,3 @@ Easy installation package for the official driver at http://www.mediatek.com/en/
   
  
 The driver will automatically load at startup.... 
-
-
-N.B: Do not double click on the file and select "run in terminal or run", that won't work..
