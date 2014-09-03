@@ -1,4 +1,5 @@
 cd $(dirname $0)
+sudo chmod -R 777 .
 sudo cp -R firmware/Wi-FI/* /lib/firmware/
 sudo cp -R firmware/BT/* /lib/firmware/
 cd rt2x00
