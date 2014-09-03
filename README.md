@@ -21,11 +21,10 @@ Easy installation package for the official driver at http://www.mediatek.com/en/
 3.Installation
 
  * Give the install.sh file execution permission:
- *    cd path_to_the_file
+ *    cd path_to_the_file_containing_directory
  *    sudo chmod +x install.sh
  * Now run the file:
  *    ./install.sh
-        
  * Put your password and wait to finish the process
   
  
