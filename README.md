@@ -27,3 +27,7 @@ Run the install.sh file in terminal :
 Put your password and wait to finish the process
  
 The driver will automatically load at startup.... 
+
+Webpage:
+--------
+http://mdjahidulhamid.github.io/MT7630E/
