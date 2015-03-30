@@ -1,4 +1,5 @@
-cd $(dirname $0)
+BASEDIR=`dirname "${0}"`
+cd "$BASEDIR"
 sudo chmod -R 777 .
 sudo cp -R firmware/Wi-FI/* /lib/firmware/
 sudo cp -R firmware/BT/* /lib/firmware/
