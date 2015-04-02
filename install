@@ -1,0 +1,9 @@
+#!/bin/bash
+BASEDIR=`dirname "${0}"`
+cd "$BASEDIR"
+sudo -s <<EOF
+sudo -u $USER make
+make install
+modprobe mt7630e
+modprobe mt76xx
+EOF
