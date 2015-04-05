@@ -50,6 +50,7 @@
 #define TX_MAX_CNT_7630(__x)			(TX_RING_CNT + ((__x) * TX_QUEUE_REG_OFFSET))
 #define TX_CTX_IDX_7630(__x)			(TX_RING_CIDX + ((__x) * TX_QUEUE_REG_OFFSET))
 #define TX_DTX_IDX_7630(__x)			(TX_RING_DIDX + ((__x) * TX_QUEUE_REG_OFFSET))
+/*
 
 /*
  * 8051 firmware image.

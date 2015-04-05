@@ -1784,7 +1784,7 @@
 /*
  * TX_STA_CNT0: TX Beacon count
  */
-#define TX_STA_CNT0			0x170C
+#define TX_STA_CNT0			0x170c
 #define TX_STA_CNT0_TX_FAIL_COUNT	FIELD32(0x0000ffff)
 #define TX_STA_CNT0_TX_BEACON_COUNT	FIELD32(0xffff0000)
 

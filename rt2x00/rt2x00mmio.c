@@ -57,6 +57,7 @@ int rt2x00mmio_regbusy_read(struct rt2x00_dev *rt2x00dev,
 
 	return 0;
 }
+EXPORT_SYMBOL_GPL(rt2x00mmio_regbusy_read);
 
 bool rt2x00mmio_rxdone(struct rt2x00_dev *rt2x00dev)
 {
@@ -95,6 +96,7 @@ bool rt2x00mmio_rxdone(struct rt2x00_dev *rt2x00dev)
 
 	return !max_rx;
 }
+EXPORT_SYMBOL_GPL(rt2x00mmio_rxdone);
 
 void rt2x00mmio_flush_queue(struct data_queue *queue, bool drop)
 {
@@ -103,6 +105,7 @@ void rt2x00mmio_flush_queue(struct data_queue *queue, bool drop)
 	for (i = 0; !rt2x00queue_empty(queue) && i < 10; i++)
 		msleep(10);
 }
+EXPORT_SYMBOL_GPL(rt2x00mmio_flush_queue);
 
 /*
  * Device initialization handlers.
@@ -187,6 +190,7 @@ exit:
 
 	return status;
 }
+EXPORT_SYMBOL_GPL(rt2x00mmio_initialize);
 
 void rt2x00mmio_uninitialize(struct rt2x00_dev *rt2x00dev)
 {
@@ -203,6 +207,7 @@ void rt2x00mmio_uninitialize(struct rt2x00_dev *rt2x00dev)
 	queue_for_each(rt2x00dev, queue)
 		rt2x00mmio_free_queue_dma(rt2x00dev, queue);
 }
+EXPORT_SYMBOL_GPL(rt2x00mmio_uninitialize);
 
 /*
  * rt2x00mmio module information.

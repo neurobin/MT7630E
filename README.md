@@ -8,40 +8,22 @@ Easy installation package for the official driver at http://www.mediatek.com/en/
 ***************************************************************************************************************************
 
 1. Component
-------------
 
 * rt2x00: Wi-Fi driver source code
 * btloader: Bluetooth firmware loader source code
 * firmware: Firmware binary code (MT7650E234.bin is for Wi-Fi, mt76x0.bin is for Bluetooth)
 
+2.User Environment
 
-2. Installation
-----------------
+* OS version: Ubuntu 14.04 LTS / Linux Mint 17 LTS
+* Linux kernel version: 3.13 and 3.14
 
-First give some file execution permission:
+3.Installation
 
-     chmod +x install test uninstall
-     
-Now to install it, run:
+Run the install.sh file in terminal :
 
-     ./install
-     
-To test it without installing, run:
-
-     ./test
-     
-To uninstall, run:
-
-      ./uninstall
+./install.sh
   
+Put your password and wait to finish the process
  
 The driver will automatically load at startup.... 
-
-Source:
--------
-
-      This copy of driver was taken from https://github.com/kuba-moo/mt7630e
-
-Webpage:
---------
-http://mdjahidulhamid.github.io/MT7630E/

@@ -153,6 +153,10 @@ int rt2x00pci_probe(struct pci_dev *pci_dev, const struct rt2x00_ops *ops)
 
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
+
+		u32 MacValue;
+		u32 tmp=0;
+
 		rt2x00dev->TXWISize=20;
 		rt2x00dev->bscan=0;
 
@@ -182,6 +186,7 @@ exit_disable_device:
 
 	return retval;
 }
+EXPORT_SYMBOL_GPL(rt2x00pci_probe);
 
 void rt2x00pci_remove(struct pci_dev *pci_dev)
 {
@@ -202,6 +207,7 @@ void rt2x00pci_remove(struct pci_dev *pci_dev)
 	pci_disable_device(pci_dev);
 	pci_release_regions(pci_dev);
 }
+EXPORT_SYMBOL_GPL(rt2x00pci_remove);
 
 #ifdef CONFIG_PM
 int rt2x00pci_suspend(struct pci_dev *pci_dev, pm_message_t state)
@@ -218,6 +224,7 @@ int rt2x00pci_suspend(struct pci_dev *pci_dev, pm_message_t state)
 	pci_disable_device(pci_dev);
 	return pci_set_power_state(pci_dev, pci_choose_state(pci_dev, state));
 }
+EXPORT_SYMBOL_GPL(rt2x00pci_suspend);
 
 int rt2x00pci_resume(struct pci_dev *pci_dev)
 {
@@ -233,6 +240,7 @@ int rt2x00pci_resume(struct pci_dev *pci_dev)
 	pci_restore_state(pci_dev);
 	return rt2x00lib_resume(rt2x00dev);
 }
+EXPORT_SYMBOL_GPL(rt2x00pci_resume);
 #endif /* CONFIG_PM */
 
 /*

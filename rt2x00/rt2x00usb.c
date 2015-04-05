@@ -76,6 +76,7 @@ int rt2x00usb_vendor_request(struct rt2x00_dev *rt2x00dev,
 
 	return status;
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_vendor_request);
 
 int rt2x00usb_vendor_req_buff_lock(struct rt2x00_dev *rt2x00dev,
 				   const u8 request, const u8 requesttype,
@@ -106,6 +107,7 @@ int rt2x00usb_vendor_req_buff_lock(struct rt2x00_dev *rt2x00dev,
 
 	return status;
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_vendor_req_buff_lock);
 
 int rt2x00usb_vendor_request_buff(struct rt2x00_dev *rt2x00dev,
 				  const u8 request, const u8 requesttype,
@@ -136,6 +138,7 @@ int rt2x00usb_vendor_request_buff(struct rt2x00_dev *rt2x00dev,
 
 	return status;
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_vendor_request_buff);
 
 int rt2x00usb_regbusy_read(struct rt2x00_dev *rt2x00dev,
 			   const unsigned int offset,
@@ -160,6 +163,7 @@ int rt2x00usb_regbusy_read(struct rt2x00_dev *rt2x00dev,
 
 	return 0;
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_regbusy_read);
 
 
 struct rt2x00_async_read_data {
@@ -212,6 +216,7 @@ void rt2x00usb_register_read_async(struct rt2x00_dev *rt2x00dev,
 		kfree(rd);
 	usb_free_urb(urb);
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_register_read_async);
 
 /*
  * TX data handlers.
@@ -440,6 +445,7 @@ void rt2x00usb_kick_queue(struct data_queue *queue)
 		break;
 	}
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_kick_queue);
 
 static bool rt2x00usb_flush_entry(struct queue_entry *entry, void *data)
 {
@@ -510,6 +516,7 @@ void rt2x00usb_flush_queue(struct data_queue *queue, bool drop)
 		msleep(10);
 	}
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_flush_queue);
 
 static void rt2x00usb_watchdog_tx_dma(struct data_queue *queue)
 {
@@ -538,6 +545,7 @@ void rt2x00usb_watchdog(struct rt2x00_dev *rt2x00dev)
 		}
 	}
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_watchdog);
 
 /*
  * Radio handlers
@@ -547,6 +555,7 @@ void rt2x00usb_disable_radio(struct rt2x00_dev *rt2x00dev)
 	rt2x00usb_vendor_request_sw(rt2x00dev, USB_RX_CONTROL, 0, 0,
 				    REGISTER_TIMEOUT);
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_disable_radio);
 
 /*
  * Device initialization handlers.
@@ -558,6 +567,7 @@ void rt2x00usb_clear_entry(struct queue_entry *entry)
 	if (entry->queue->qid == QID_RX)
 		rt2x00usb_kick_rx_entry(entry, NULL);
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_clear_entry);
 
 static void rt2x00usb_assign_endpoint(struct data_queue *queue,
 				      struct usb_endpoint_descriptor *ep_desc)
@@ -722,6 +732,7 @@ exit:
 
 	return status;
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_initialize);
 
 void rt2x00usb_uninitialize(struct rt2x00_dev *rt2x00dev)
 {
@@ -730,6 +741,7 @@ void rt2x00usb_uninitialize(struct rt2x00_dev *rt2x00dev)
 	queue_for_each(rt2x00dev, queue)
 		rt2x00usb_free_entries(queue);
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_uninitialize);
 
 /*
  * USB driver handlers.
@@ -825,6 +837,7 @@ exit_put_device:
 
 	return retval;
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_probe);
 
 void rt2x00usb_disconnect(struct usb_interface *usb_intf)
 {
@@ -844,6 +857,7 @@ void rt2x00usb_disconnect(struct usb_interface *usb_intf)
 	usb_set_intfdata(usb_intf, NULL);
 	usb_put_dev(interface_to_usbdev(usb_intf));
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_disconnect);
 
 #ifdef CONFIG_PM
 int rt2x00usb_suspend(struct usb_interface *usb_intf, pm_message_t state)
@@ -853,6 +867,7 @@ int rt2x00usb_suspend(struct usb_interface *usb_intf, pm_message_t state)
 
 	return rt2x00lib_suspend(rt2x00dev, state);
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_suspend);
 
 int rt2x00usb_resume(struct usb_interface *usb_intf)
 {
@@ -861,6 +876,7 @@ int rt2x00usb_resume(struct usb_interface *usb_intf)
 
 	return rt2x00lib_resume(rt2x00dev);
 }
+EXPORT_SYMBOL_GPL(rt2x00usb_resume);
 #endif /* CONFIG_PM */
 
 /*

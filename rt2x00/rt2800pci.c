@@ -52,7 +52,6 @@ void MT_2800pci_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
 extern int AsicWaitPDMAIdle(struct rt2x00_dev *rt2x00dev, int round, int wait_us);
 extern void RTMPEnableRxTx(struct rt2x00_dev *rt2x00dev);
 
-#if 0
 static void rt2860_int_disable(struct rt2x00_dev *rt2x00dev, unsigned int mode)
 {
 	u32 regValue;
@@ -71,7 +70,6 @@ static void rt2860_int_enable(struct rt2x00_dev *rt2x00dev, unsigned int mode)
 	rt2x00mmio_register_write(rt2x00dev, INT_MASK_CSR, regValue);     /* 1:enable */
 
 }
-#endif
 
 /*
  * Allow hardware encryption to be disabled.
@@ -593,7 +591,7 @@ static int rt2800pci_init_queues(struct rt2x00_dev *rt2x00dev)
 			rt2x00mmio_register_write(rt2x00dev, TX_RING_BASE + offset, entry_priv->desc_dma);
 			rt2x00mmio_register_write(rt2x00dev, TX_RING_CNT + offset, rt2x00dev->tx[i].limit);
 			rt2x00mmio_register_write(rt2x00dev, TX_RING_CIDX + offset, 0);
-			printk("-->TX_RING: Base=0x%pad, Cnt=%d\n", &entry_priv->desc_dma,rt2x00dev->tx[i].limit);
+			printk("-->TX_RING: Base=0x%x, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->tx[i].limit);
 		}
 
 		offset = 4 * 0x10;
@@ -613,7 +611,7 @@ static int rt2800pci_init_queues(struct rt2x00_dev *rt2x00dev)
 
 		rt2x00mmio_register_write(rt2x00dev, RX_RING_CIDX + 0x10, rt2x00dev->rx[0].limit - 1);
 
-		printk("-->RX_RING: Base=0x%pad, Cnt=%d\n", &entry_priv->desc_dma,rt2x00dev->rx[0].limit);
+		printk("-->RX_RING: Base=0x%x, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->rx[0].limit);
 
 
 		
@@ -928,7 +926,7 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 	TXINFO_STRUC *pTxInfo;
 	//printk("==>rt2800pci_write_tx_desc\n");
 
-	pTxD = (TXD_STRUC *) entry_priv->desc;
+	pTxD = entry_priv->desc;
 	pTxInfo = (TXINFO_STRUC *)(entry_priv->desc + sizeof(TXD_STRUC));
 	memset(pTxD, 0, 16);
 	/*
@@ -944,8 +942,6 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 	 */
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
-		struct _TXINFO_NMAC_PKT *nmac_info;
-
 		pTxD->SDPtr0 = skbdesc->skb_dma;
 		pTxD->SDLen0 = TXWI_DESC_SIZE_7630;	/* include padding*/
 		pTxD->SDPtr1 = skbdesc->skb_dma + TXWI_DESC_SIZE_7630;
@@ -954,6 +950,7 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 		pTxD->LastSec1 =  !test_bit(ENTRY_TXD_MORE_FRAG, &txdesc->flags);
 		//pTxD->DMADONE= 0;
 		pTxD->Burst= test_bit(ENTRY_TXD_BURST, &txdesc->flags);
+		struct _TXINFO_NMAC_PKT *nmac_info;
 		nmac_info = (struct _TXINFO_NMAC_PKT *)pTxInfo;
 		nmac_info->pkt_80211 = 1;
 		nmac_info->info_type = 0;
@@ -1034,16 +1031,16 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 	{
 			//MT_2800pci_hex_dump("rxd", rxd, 16);
 			unsigned char hw_rx_info[16];
-			//unsigned char hw_fce[4];
-			//__le32 *destrxd = NULL;
+			unsigned char hw_fce[4];
+			__le32 *destrxd = NULL;
 
 			//memcpy(&hw_rx_info[0], rxd,12);
 			memcpy(&hw_rx_info[0], rxd,16);
 			//memcpy(&hw_fce[0], rxd+12,4);
-			pRxFceInfo = (RXFCE_INFO *) &hw_rx_info[12];
+			pRxFceInfo = &hw_rx_info[12];
 			//destrxd = (__le32 *) entry->skb->data; 	//woody
 			//memcpy(&hw_rx_info[12], destrxd,4);
-			pRxInfo = (RXINFO_STRUC *) entry->skb->data;
+			pRxInfo = entry->skb->data;
 
 			
 			//rxd = &hw_rx_info[0];
@@ -1076,7 +1073,7 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 					printk("crc RXD_W3_CIPHER_ERROR\n");
 
 				if (pRxInfo->Decrypted) {
-					vend_dbg("Decrypted\n");
+					printk("Decrypted\n");
 					/*
 					 * Hardware has stripped IV/EIV data from 802.11 frame during
 					 * decryption. Unfortunately the descriptor doesn't contain
@@ -1250,6 +1247,31 @@ static bool rt2800pci_txdone_release_entries(struct queue_entry *entry,
 	return true;
 }
 
+ #define woody_kfifo_get(fifo, val) \
+ ({ \
+         typeof((fifo) + 1) __tmp = (fifo); \
+         typeof(__tmp->ptr) __val = (val); \
+         unsigned int __ret; \
+         size_t __recsize = sizeof(*__tmp->rectype); \
+        struct __kfifo *__kfifo = &__tmp->kfifo; \
+	{ \
+                 __ret = !kfifo_is_empty(__tmp); \
+                 if ((__is_kfifo_ptr(__tmp)))	\
+				 	printk("__is_kfifo_ptr(1)\n");	\
+                 if (__ret) { \
+             			 printk("((typeof(__tmp->type))__kfifo->data)[%d]=0x%x\n",__kfifo->out & __tmp->kfifo.mask, ((typeof(__tmp->type))__kfifo->data)[__kfifo->out & __tmp->kfifo.mask]);	\				 	
+				*(typeof(__tmp->type))__val = \	 	
+                         (__is_kfifo_ptr(__tmp) ? \
+                                ((typeof(__tmp->type))__kfifo->data) : \
+                                (__tmp->buf) \
+                                )[__kfifo->out & __tmp->kfifo.mask]; \
+                         smp_wmb(); \
+                         __kfifo->out++; \
+                } \	
+              } \    
+              __ret; \
+ 	})
+ 	
 static bool rt2800pci_txdone(struct rt2x00_dev *rt2x00dev)
 {
 	struct data_queue *queue;
@@ -1258,7 +1280,7 @@ static bool rt2800pci_txdone(struct rt2x00_dev *rt2x00dev)
 	int max_tx_done = 16;
 	TX_STA_FIFO_STRUC	StaFifo;
 	while (kfifo_get(&rt2x00dev->txstatus_fifo, &status)) {
-		vend_dbg("rt2800pci_txdone status = 0x%x\n",status);
+		printk("rt2800pci_txdone status = 0x%x\n",status);
 		StaFifo.word = status;
 		qid =  (UCHAR)StaFifo.field.PidType;//rt2x00_get_field32(status, TX_STA_FIFO_PID_QUEUE);
 			
@@ -1273,7 +1295,7 @@ static bool rt2800pci_txdone(struct rt2x00_dev *rt2x00dev)
 			break;
 		}
 
-		vend_dbg("rt2800pci_txdone qid = 0x%x\n",qid);
+		printk("rt2800pci_txdone qid = 0x%x\n",qid);
 		queue = rt2x00queue_get_tx_queue(rt2x00dev, qid);
 		if (unlikely(queue == NULL)) {
 			/*
@@ -1362,6 +1384,10 @@ static void rt2800pci_txstatus_tasklet(unsigned long data)
 static void rt2800pci_tx8damdone_tasklet(unsigned long data)
 {
 	struct rt2x00_dev *rt2x00dev = (struct rt2x00_dev *)data;
+	unsigned long flags;
+	INT_SOURCE_CSR_STRUC IntSource;
+	BOOLEAN bReschedule = 0;
+
 
 	if (RTMPHandleTxRing8DmaDoneInterrupt(rt2x00dev))
 		tasklet_schedule(&rt2x00dev->tx8damdone_tasklet);
@@ -1447,6 +1473,34 @@ static void rt2800pci_autowake_tasklet(unsigned long data)
 	}
 }
 
+
+ #define woody_kfifo_put(fifo, val) \
+ ({ \
+         typeof((fifo) + 1) __tmp = (fifo); \
+         typeof(*__tmp->const_type) __val = (val); \
+         unsigned int __ret; \
+         size_t __recsize = sizeof(*__tmp->rectype); \
+        struct __kfifo *__kfifo = &__tmp->kfifo; \
+		printk("__recsize =%d\n",__recsize);	\
+	{ \
+                 __ret = !kfifo_is_full(__tmp); \
+                 printk("__ret =%d\n",__ret);	\
+                 if ((__is_kfifo_ptr(__tmp)))	\
+				 	printk("__is_kfifo_ptr\n");	\
+			printk("value=0x%x, (typeof(*__tmp->type))__val = 0x%x\n", val, (typeof(*__tmp->type))__val);	\		 	
+                 if (__ret) { \
+                         (__is_kfifo_ptr(__tmp) ? \
+                         ((typeof(__tmp->type))__kfifo->data) : \
+                         (__tmp->buf) \
+                         )[__kfifo->in & __tmp->kfifo.mask] = \
+                                 (typeof(*__tmp->type))__val; \
+                         smp_wmb(); \
+printk("((typeof(__tmp->type))__kfifo->data)[%d]=0x%x\n",__kfifo->in & __tmp->kfifo.mask, ((typeof(__tmp->type))__kfifo->data)[__kfifo->in & __tmp->kfifo.mask]);	\				 	                 
+                         __kfifo->in++; \
+                } \	
+              } \    
+              __ret; \
+ 	})
 static void rt2800pci_txstatus_interrupt(struct rt2x00_dev *rt2x00dev)
 {
 	u32 status;
@@ -1483,7 +1537,7 @@ static void rt2800pci_txstatus_interrupt(struct rt2x00_dev *rt2x00dev)
 		}		
 #endif
 		Fifi_Status.field.PidType = (Fifi_Status_ext.field.TX_PKT_ID == 5)? 0:Fifi_Status_ext.field.TX_PKT_ID;
-		vend_dbg("0x%x (status)\n",Fifi_Status.word);
+		printk("0x%x (status)\n",Fifi_Status.word);
 		status = Fifi_Status.word;
 
 		//woody_kfifo_put(&rt2x00dev->txstatus_fifo, &status);
@@ -1734,6 +1788,47 @@ static const struct rt2x00_ops rt2800pci_ops = {
  */
 #ifdef CONFIG_PCI
 static DEFINE_PCI_DEVICE_TABLE(rt2800pci_device_table) = {
+	{ PCI_DEVICE(0x1814, 0x0601) },
+	{ PCI_DEVICE(0x1814, 0x0681) },
+	{ PCI_DEVICE(0x1814, 0x0701) },
+	{ PCI_DEVICE(0x1814, 0x0781) },
+	{ PCI_DEVICE(0x1814, 0x3090) },
+	{ PCI_DEVICE(0x1814, 0x3091) },
+	{ PCI_DEVICE(0x1814, 0x3092) },
+	{ PCI_DEVICE(0x1432, 0x7708) },
+	{ PCI_DEVICE(0x1432, 0x7727) },
+	{ PCI_DEVICE(0x1432, 0x7728) },
+	{ PCI_DEVICE(0x1432, 0x7738) },
+	{ PCI_DEVICE(0x1432, 0x7748) },
+	{ PCI_DEVICE(0x1432, 0x7758) },
+	{ PCI_DEVICE(0x1432, 0x7768) },
+	{ PCI_DEVICE(0x1462, 0x891a) },
+	{ PCI_DEVICE(0x1a3b, 0x1059) },
+#ifdef CONFIG_RT2800PCI_RT3290
+	{ PCI_DEVICE(0x1814, 0x3290) },
+#endif
+#ifdef CONFIG_RT2800PCI_RT33XX
+	{ PCI_DEVICE(0x1814, 0x3390) },
+#endif
+#ifdef CONFIG_RT2800PCI_RT35XX
+	{ PCI_DEVICE(0x1432, 0x7711) },
+	{ PCI_DEVICE(0x1432, 0x7722) },
+	{ PCI_DEVICE(0x1814, 0x3060) },
+	{ PCI_DEVICE(0x1814, 0x3062) },
+	{ PCI_DEVICE(0x1814, 0x3562) },
+	{ PCI_DEVICE(0x1814, 0x3592) },
+	{ PCI_DEVICE(0x1814, 0x3593) },
+	{ PCI_DEVICE(0x1814, 0x359f) },
+#endif
+#ifdef CONFIG_RT2800PCI_RT53XX
+	{ PCI_DEVICE(0x1814, 0x5360) },
+	{ PCI_DEVICE(0x1814, 0x5362) },
+	{ PCI_DEVICE(0x1814, 0x5390) },
+	{ PCI_DEVICE(0x1814, 0x5392) },
+	{ PCI_DEVICE(0x1814, 0x539a) },
+	{ PCI_DEVICE(0x1814, 0x539b) },
+	{ PCI_DEVICE(0x1814, 0x539f) },
+#endif
 	{ PCI_DEVICE(0x14c3, 0x7630) },
 	{ PCI_DEVICE(0x14c3, 0x7650) },
 	{ 0, }
