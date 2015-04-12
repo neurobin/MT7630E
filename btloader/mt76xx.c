@@ -1083,6 +1083,9 @@ static struct usb_device_id mtk_bt_loader_tbl[] = {
 	/* Mediatek MT662 */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7662, 0xe0, 0x01, 0x01) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7632, 0xe0, 0x01, 0x01) },
+	/* Foxconn / Hon Hai */
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x0489, 0xe069, 0xe0, 0x01, 0x01) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x0489, 0xe069, 0xff, 0xff, 0xff) },
 	{ }	/* Terminating entry */
 };
 

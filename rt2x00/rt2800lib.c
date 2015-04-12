@@ -4089,7 +4089,7 @@ static void rt2800_config_channel_rf7630(struct rt2x00_dev *rt2x00dev,
 	u32 IdReg = 0, MacReg = 0, i = 0, RfBand = 0;
 	const MT76x0_FREQ_ITEM *pMT76x0_freq_item = NULL;
 	unsigned char BBPCurrentBW;
-	printk("==>rt2800_config_channel_rf7630 ch%d\n",rf->channel);
+	vend_dbg("==>rt2800_config_channel_rf7630 ch%d\n",rf->channel);
 	//return;
 	
 	
@@ -4225,7 +4225,7 @@ static void rt2800_config_channel_rf7630(struct rt2x00_dev *rt2x00dev,
 			RFValue |= pMT76x0_freq_item->pllR24_b1b0;
 			rt2800_MT7630_rfcsr_write(rt2x00dev, RF_R24, RFValue,RF_BANK0);
 
-			printk("SwitchChannel#%d\n",rf->channel);
+			vend_dbg("SwitchChannel#%d\n",rf->channel);
 		}
 	}
 
@@ -4432,14 +4432,14 @@ static void rt2800_config_channel(struct rt2x00_dev *rt2x00dev,
 						rt2x00dev->CommonCfg.Channel = rt2x00dev->CommonCfg.CentralChannel + 1;
 					else
 						rt2x00dev->CommonCfg.Channel = rt2x00dev->CommonCfg.CentralChannel + 2;
-					printk("BW=40 EXTCHA_BELOW CentralChannel=%d\n",rt2x00dev->CommonCfg.CentralChannel);
+					vend_dbg("BW=40 EXTCHA_BELOW CentralChannel=%d\n",rt2x00dev->CommonCfg.CentralChannel);
 			}
 			else
 			{
 					rtmp_bbp_set_ctrlch(rt2x00dev,EXTCHA_ABOVE);
 					rtmp_mac_set_ctrlch(rt2x00dev, EXTCHA_ABOVE);
 					rt2x00dev->CommonCfg.Channel = rt2x00dev->CommonCfg.CentralChannel - 2;
-					printk("BW=40 EXTCHA_ABOVE CentralChannel=%d\n",rt2x00dev->CommonCfg.CentralChannel);
+					vend_dbg("BW=40 EXTCHA_ABOVE CentralChannel=%d\n",rt2x00dev->CommonCfg.CentralChannel);
 					//printk("BW=40 EXTCHA_ABOVE\n");
 			}
 			rt2x00dev->CommonCfg.BBPCurrentBW=BW_40;
@@ -4450,7 +4450,7 @@ static void rt2800_config_channel(struct rt2x00_dev *rt2x00dev,
 					rtmp_mac_set_ctrlch(rt2x00dev, EXTCHA_NONE);
 					rt2x00dev->CommonCfg.BBPCurrentBW=BW_20;
 					rt2x00dev->CommonCfg.Channel = rt2x00dev->CommonCfg.CentralChannel;
-					printk("BW=20 EXTCHA_NONE\n");
+					vend_dbg("BW=20 EXTCHA_NONE\n");
 		}
 	}
 	if (rf->channel <= 14) {
