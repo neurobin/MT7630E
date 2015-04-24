@@ -42,6 +42,3 @@ Source:
 
       This copy of driver was taken from https://github.com/kuba-moo/mt7630e
 
-Webpage:
---------
-http://mdjahidulhamid.github.io/MT7630E/
