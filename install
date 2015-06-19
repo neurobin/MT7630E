@@ -7,3 +7,4 @@ make install
 modprobe mt7630e
 modprobe mt76xx
 EOF
+

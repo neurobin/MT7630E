@@ -9,3 +9,4 @@ insmod ./rt2x00/mt7630e.ko
 insmod ./btloader/mt76xx.ko
 modprobe -r rt2800pci
 EOF
+

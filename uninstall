@@ -2,3 +2,4 @@
 BASEDIR="$(dirname "$BASH_SOURCE")"
 cd "$BASEDIR"
 sudo -s make uninstall
+
