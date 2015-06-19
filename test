@@ -1,5 +1,5 @@
 #!/bin/bash
-BASEDIR=`dirname "${0}"`
+BASEDIR="$(dirname "$BASH_SOURCE")"
 cd "$BASEDIR"
 sudo -s <<EOF
 [ -f rt2x00/mt7630e.ko ] && [ -f btloader/mt76xx.ko ] || sudo -u $USER make

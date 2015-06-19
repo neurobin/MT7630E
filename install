@@ -1,5 +1,5 @@
 #!/bin/bash
-BASEDIR=`dirname "${0}"`
+BASEDIR="$(dirname "$BASH_SOURCE")"
 cd "$BASEDIR"
 sudo -s <<EOF
 sudo -u $USER make
