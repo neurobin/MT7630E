@@ -1,12 +1,13 @@
 #!/bin/bash
 BASEDIR="$(dirname "$BASH_SOURCE")"
 cd "$BASEDIR"
-sudo -s <<EOF
+if (( $EUID != 0 )); then
+    printf "\n-----Sorry! Run with root privilege\n\n"
+    exit 1
+fi
 [ -f rt2x00/mt7630e.ko ] && [ -f btloader/mt76xx.ko ] || sudo -u $USER make
 cp -v firmware/*/* /lib/firmware/
 modprobe rt2800pci
 insmod ./rt2x00/mt7630e.ko
 insmod ./btloader/mt76xx.ko
 modprobe -r rt2800pci
-EOF
-

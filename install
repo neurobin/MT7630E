@@ -1,10 +1,11 @@
 #!/bin/bash
 BASEDIR="$(dirname "$BASH_SOURCE")"
 cd "$BASEDIR"
-sudo -s <<EOF
-sudo -u $USER make
+if (( $EUID != 0 )); then
+    printf "\n-----Sorry! Run with root privilege\n\n"
+    exit 1
+fi
+make
 make install
 modprobe mt7630e
 modprobe mt76xx
-EOF
-
