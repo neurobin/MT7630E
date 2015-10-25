@@ -1,7 +1,8 @@
-.PHONY: all clean install uninstall
+.PHONY: all clean install ninstall
 
 KDIR ?= /lib/modules/`uname -r`/build
 DST_DIR ?= /lib/modules/`uname -r`/kernel/drivers/net/wireless/
+PKG_VER ?= 2.0.2
 
 all:
 	$(MAKE) -C $(KDIR) M=$(CURDIR)/rt2x00 modules
@@ -22,3 +23,11 @@ uninstall:
 	rm -vf $(DST_DIR)/mt7630e.ko
 	rm -vf $(DST_DIR)/mt76xx.ko
 	depmod
+
+dkms:
+	cp -v firmware/*/* /lib/firmware/
+	cp -R . /usr/src/MT7630E-$(PKG_VER)
+	dkms add -m mt7630e -v $(PKG_VER)
+	dkms build -m mt7630e -v $(PKG_VER)
+	dkms install -m mt7630e -v $(PKG_VER)
+
