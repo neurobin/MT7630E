@@ -68,21 +68,6 @@ struct lib_queue_entry_priv_pci {
 	dma_addr_t desc_dma;
 };
 
-void lib_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
-{
-	unsigned char *pt;
-	int x;
-	pt = pSrcBufVA;
-	printk("%s: %p, len = %d\n", str, pSrcBufVA, SrcBufLen);
-	for (x = 0; x < SrcBufLen; x++) {
-		if (x % 16 == 0)
-			printk("0x%04x : ", x);
-		printk("%02x ", ((unsigned char)pt[x]));
-		if (x % 16 == 15)
-			printk("\n");
-	}
-	printk("\n");
-}
 extern WLAN_FUN_CTRL_STRUC g_WlanFunCtrl;
 
 /* BBP Init Table*/
@@ -168,7 +153,7 @@ static RTMP_REG_PAIR MT76x0_BBP_Init_Tab[] = {
 	{RXO_R24, 0x00000006},
 	{RXO_R28, 0x0000003F},
 };
-static unsigned char MT76x0_BBP_Init_Tab_Size = (sizeof(MT76x0_BBP_Init_Tab) / sizeof(RTMP_REG_PAIR));
+static const unsigned int MT76x0_BBP_Init_Tab_Size = (sizeof(MT76x0_BBP_Init_Tab) / sizeof(RTMP_REG_PAIR));
 
 MT76x0_BBP_Table MT76x0_BPP_SWITCH_Tab[] = {
 	
@@ -241,7 +226,7 @@ MT76x0_BBP_Table MT76x0_BPP_SWITCH_Tab[] = {
 	{RF_G_BAND | RF_BW_20 | RF_BW_40,	{AGC1_R58, 0x00001010}},
 	{RF_A_BAND | RF_BW_20 | RF_BW_40 | RF_BW_80,	{AGC1_R58, 0x00000000}},
 };
-unsigned char MT76x0_BPP_SWITCH_Tab_Size = (sizeof(MT76x0_BPP_SWITCH_Tab) / sizeof(MT76x0_BBP_Table));
+static const unsigned int MT76x0_BPP_SWITCH_Tab_Size = (sizeof(MT76x0_BPP_SWITCH_Tab) / sizeof(MT76x0_BBP_Table));
 
 static RTMP_REG_PAIR MT76x0_DCOC_Tab[] = {
 	{CAL_R47, 0x000010F0},
@@ -255,7 +240,7 @@ static RTMP_REG_PAIR MT76x0_DCOC_Tab[] = {
 	//{CAL_R54, 0x00008080},
 	{CAL_R55, 0x00005050},
 };
-static unsigned char MT76x0_DCOC_Tab_Size = (sizeof(MT76x0_DCOC_Tab) / sizeof(RTMP_REG_PAIR));
+static const unsigned int MT76x0_DCOC_Tab_Size = (sizeof(MT76x0_DCOC_Tab) / sizeof(RTMP_REG_PAIR));
 
 typedef struct _BANK_RF_REG_PAIR {
 	unsigned char Bank;
@@ -383,7 +368,7 @@ static BANK_RF_REG_PAIR MT76x0_RF_Central_RegTb[] = {
 	{RF_BANK0,	RF_R72, 0xD0},
 	{RF_BANK0,	RF_R73, 0x93},
 };
-static unsigned int MT76x0_RF_Central_RegTb_Size = (sizeof(MT76x0_RF_Central_RegTb) / sizeof(BANK_RF_REG_PAIR));
+static const unsigned int MT76x0_RF_Central_RegTb_Size = (sizeof(MT76x0_RF_Central_RegTb) / sizeof(BANK_RF_REG_PAIR));
 
 static BANK_RF_REG_PAIR MT76x0_RF_2G_Channel_0_RegTb[] = {
 /*
@@ -674,7 +659,7 @@ static const MT76x0_RF_SWITCH_ITEM MT76x0_RF_BW_Switch[] =
 		{RF_BANK7,	RF_R77,		BW_40,	0x40},
 		{RF_BANK7,	RF_R77,		BW_80,	0x10},
 };
-unsigned char MT76x0_RF_BW_Switch_Size = (sizeof(MT76x0_RF_BW_Switch) / sizeof(MT76x0_RF_SWITCH_ITEM));
+static const unsigned int MT76x0_RF_BW_Switch_Size = (sizeof(MT76x0_RF_BW_Switch) / sizeof(MT76x0_RF_SWITCH_ITEM));
 
 static const MT76x0_RF_SWITCH_ITEM MT76x0_RF_Band_Switch[] =
 {
@@ -734,7 +719,7 @@ static const MT76x0_RF_SWITCH_ITEM MT76x0_RF_Band_Switch[] =
 		{RF_BANK7,	RF_R79,		RF_G_BAND,		0x00},
 		{RF_BANK7,	RF_R79,		RF_A_BAND,		0x55},
 };
-unsigned int MT76x0_RF_Band_Switch_Size = (sizeof(MT76x0_RF_Band_Switch) / sizeof(MT76x0_RF_SWITCH_ITEM));
+static const unsigned int MT76x0_RF_Band_Switch_Size = (sizeof(MT76x0_RF_Band_Switch) / sizeof(MT76x0_RF_SWITCH_ITEM));
 
 
 static const MT76x0_FREQ_ITEM MT76x0_Frequency_Plan[] =
@@ -869,7 +854,7 @@ static const MT76x0_FREQ_ITEM MT76x0_Frequency_Plan[] =
 	{172, 	(RF_A_BAND | RF_A_BAND_HB),	 0x02, 0x3F, 0x30, 0x97, 0xD2, 0x40, 0x04, 0x40, 0x0A, 0, 0, 1, 0x30, 0, 0x30, 0, 0, 0x3}, /* Freq 5860 */
 	{173, 	(RF_A_BAND | RF_A_BAND_HB),	 0x02, 0x3F, 0x68, 0xDD, 0xD2, 0x40, 0x10, 0x40, 0x15, 0, 0, 1, 0x30, 0, 0x30, 0, 0, 0x3}, /* Freq 5865 */
 };
-unsigned char NUM_OF_MT76x0_CHNL = (sizeof(MT76x0_Frequency_Plan) / sizeof(MT76x0_FREQ_ITEM));
+static const unsigned int NUM_OF_MT76x0_CHNL = (sizeof(MT76x0_Frequency_Plan) / sizeof(MT76x0_FREQ_ITEM));
 
 
 static MT76x0_RF_SWITCH_ITEM MT76x0_RF_INT_PA_RegTb[] = {
@@ -919,7 +904,11 @@ static MT76x0_RF_SWITCH_ITEM MT76x0_RF_INT_PA_RegTb[] = {
 	{RF_BANK6,	RF_R59,		RF_A_BAND_HB,	0x02},
 #endif
 };
-unsigned int MT76x0_RF_INT_PA_RegTb_Size = (sizeof(MT76x0_RF_INT_PA_RegTb) / sizeof(MT76x0_RF_SWITCH_ITEM));
+#if 0
+static const unsigned int MT76x0_RF_INT_PA_RegTb_Size = (sizeof(MT76x0_RF_INT_PA_RegTb) / sizeof(MT76x0_RF_SWITCH_ITEM));
+#else
+static const unsigned int MT76x0_RF_INT_PA_RegTb_Size = 0;
+#endif
 
 
 
@@ -1280,13 +1269,6 @@ static int rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 {
 	RLT_RF_CSR_CFG rfcsr = { { 0 } };
 	unsigned int i = 1;
-	int	 ret;
-
-
-
-	//ASSERT((word <= 127));
-
-	ret = 0;
 	do
 	{
 		rt2800_register_read(rt2x00dev, RF_CSR_CFG, &rfcsr.word);
@@ -1300,7 +1282,7 @@ static int rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 	if ((i == 100))
 	{
 		printk("rt2800_MT7630_rfcsr_write Retry count exhausted or device removed!!!\n");
-		goto done;
+		return 0;
 	}
 
 	rfcsr.field.RF_CSR_WR = 1;
@@ -1310,11 +1292,7 @@ static int rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 
 	rfcsr.field.RF_CSR_DATA = value;
 	rt2800_register_write(rt2x00dev, RF_CSR_CFG, rfcsr.word);
-	//printk("rlt_rf_write bank=0x%x ID=0x%x value=0x%x\n",bank, word, value);
-	ret = 0;
-
-done:
-	return ret;
+    return 0;
 }
 
 
@@ -1323,11 +1301,6 @@ static int rt2800_MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
 {
 	RLT_RF_CSR_CFG rfcsr = { { 0 } };
 	unsigned int i=0, k=0;
-	int	 ret = 1;
-
-
-
-	//ASSERT((word <= 127));
 
 	for (i=0; i<100; i++)
 	{
@@ -1364,12 +1337,8 @@ static int rt2800_MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
 	if (rfcsr.field.RF_CSR_KICK == 1)
 	{																	
 		printk("RF read R%d=0x%X fail, i[%d], k[%d]\n", word, rfcsr.word,i,k);
-		goto done;
 	}
-	ret = 0;
-
-done:
-	return ret;
+    return 0;
 }
 
 #if 0
@@ -2739,8 +2708,7 @@ void rt2800_config_filter(struct rt2x00_dev *rt2x00dev,
 			   !(filter_flags & FIF_FCSFAIL));
 	rt2x00_set_field32(&reg, RX_FILTER_CFG_DROP_PHY_ERROR,
 			   !(filter_flags & FIF_PLCPFAIL));
-	rt2x00_set_field32(&reg, RX_FILTER_CFG_DROP_NOT_TO_ME,
-			   !(filter_flags & FIF_PROMISC_IN_BSS));
+    rt2x00_set_field32(&reg, RX_FILTER_CFG_DROP_NOT_TO_ME, 1);
 	rt2x00_set_field32(&reg, RX_FILTER_CFG_DROP_NOT_MY_BSSD, 0);
 	rt2x00_set_field32(&reg, RX_FILTER_CFG_DROP_VER_ERROR, 1);
 	rt2x00_set_field32(&reg, RX_FILTER_CFG_DROP_MULTICAST,
@@ -5061,17 +5029,9 @@ void rt2800_vco_calibration(struct rt2x00_dev *rt2x00dev)
 	u32	tx_pin;
 	u8	rfcsr;
 
-	//printk("===>%s:MT7630\n", __FUNCTION__);
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
-		u32 reg;
 		return;
-		reg=0;
-		rt2800_register_read(rt2x00dev, 0x0208, &reg);
-		printk(" rt2800_vco_calibration 0x0208 = 0x%x\n",reg);
-
-		//MT76x0_VCO_CalibrationMode3(rt2x00dev);
-		
 	}
 	/*
 	 * A voltage-controlled oscillator(VCO) is an electronic oscillator
@@ -6594,7 +6554,7 @@ static u8 rt2800_init_rx_filter(struct rt2x00_dev *rt2x00dev, bool bw40,
 static void rt2800_rf_init_calibration(struct rt2x00_dev *rt2x00dev,
 				       const unsigned int rf_reg)
 {
-	u8 rfcsr;
+	u8 rfcsr = 0;
 
 	rt2800_rfcsr_read(rt2x00dev, rf_reg, &rfcsr);
 	rt2x00_set_field8(&rfcsr, FIELD8(0x80), 1);
@@ -6653,7 +6613,7 @@ static void rt2800_rx_filter_calibration(struct rt2x00_dev *rt2x00dev)
 static void rt2800_normal_mode_setup_3xxx(struct rt2x00_dev *rt2x00dev)
 {
 	struct rt2800_drv_data *drv_data = rt2x00dev->drv_data;
-	u8 min_gain, rfcsr, bbp;
+	u8 min_gain, rfcsr=0, bbp;
 	u16 eeprom;
 
 	rt2800_rfcsr_read(rt2x00dev, 17, &rfcsr);
@@ -8864,6 +8824,8 @@ int rt2800_probe_hw(struct rt2x00_dev *rt2x00dev)
 /*
  * IEEE80211 stack callback functions.
  */
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
 void rt2800_get_tkip_seq(struct ieee80211_hw *hw, u8 hw_key_idx, u32 *iv32,
 			 u16 *iv16)
 {
@@ -8880,6 +8842,26 @@ void rt2800_get_tkip_seq(struct ieee80211_hw *hw, u8 hw_key_idx, u32 *iv32,
 	memcpy(iv16, &iveiv_entry.iv[0], sizeof(*iv16));
 	memcpy(iv32, &iveiv_entry.iv[4], sizeof(*iv32));
 }
+#else
+void rt2800_get_key_seq(struct ieee80211_hw *hw,
+			struct ieee80211_key_conf *key,
+			struct ieee80211_key_seq *seq)
+{
+	struct rt2x00_dev *rt2x00dev = hw->priv;
+	struct mac_iveiv_entry iveiv_entry;
+	u32 offset;
+
+	if (key->cipher != WLAN_CIPHER_SUITE_TKIP)
+		return;
+
+	offset = MAC_IVEIV_ENTRY(key->hw_key_idx);
+	rt2800_register_multiread(rt2x00dev, offset,
+				      &iveiv_entry, sizeof(iveiv_entry));
+
+	memcpy(&seq->tkip.iv16, &iveiv_entry.iv[0], 2);
+	memcpy(&seq->tkip.iv32, &iveiv_entry.iv[4], 4);
+}
+#endif
 
 int rt2800_set_rts_threshold(struct ieee80211_hw *hw, u32 value)
 {

@@ -52,7 +52,7 @@
 /*
  * Module information.
  */
-#define DRV_VERSION	"2.3.0"
+#define DRV_VERSION	"2.3.2"
 #define DRV_PROJECT	"http://rt2x00.serialmonkey.com"
 
 
@@ -472,9 +472,9 @@ enum CALIBRATION_ID {
 typedef	union _TX_STA_FIFO_EXT_STRUC {
 	struct
 	{
-		ULONG TX_RTY_CNT:8; // Tx retry count
-		ULONG TX_PKT_ID:8; // Tx packet ID (copied from per-packet TXWI)
-		ULONG Reserved:16;
+		u32 TX_RTY_CNT:8; // Tx retry count
+		u32 TX_PKT_ID:8; // Tx packet ID (copied from per-packet TXWI)
+		u32 Reserved:16;
 	} field;
 
 	UINT word;
@@ -2767,10 +2767,11 @@ int rt2x00mac_sta_remove(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 void rt2x00mac_sw_scan_start(struct ieee80211_hw *hw);
 void rt2x00mac_sw_scan_complete(struct ieee80211_hw *hw);
 #else
-void rt2x00mac_sw_scan_start(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-			     const u8 *mac_addr);
+void rt2x00mac_sw_scan_start(struct ieee80211_hw *hw,
+                              struct ieee80211_vif *vif,
+                              const u8 *mac_addr);
 void rt2x00mac_sw_scan_complete(struct ieee80211_hw *hw,
-				struct ieee80211_vif *vif);
+                              struct ieee80211_vif *vif);
 #endif
 int rt2x00mac_get_stats(struct ieee80211_hw *hw,
 			struct ieee80211_low_level_stats *stats);
@@ -2786,7 +2787,7 @@ void rt2x00mac_rfkill_poll(struct ieee80211_hw *hw);
 void rt2x00mac_flush(struct ieee80211_hw *hw, u32 queues, bool drop);
 #else
 void rt2x00mac_flush(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-		     u32 queues, bool drop);
+                     u32 queues, bool drop);
 #endif
 int rt2x00mac_set_antenna(struct ieee80211_hw *hw, u32 tx_ant, u32 rx_ant);
 int rt2x00mac_get_antenna(struct ieee80211_hw *hw, u32 *tx_ant, u32 *rx_ant);
@@ -2934,7 +2935,7 @@ void RtmpAllocDescBuf(
 	OUT PNDIS_PHYSICAL_ADDRESS	phy_addr);
 
 VOID dumpTxWI(struct rt2x00_dev *rt2x00dev, TXWI_STRUC *pTxWI);
-void hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
+void rt2x00_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
 
 VOID SendAndesWLANStatus(
 	IN struct rt2x00_dev *rt2x00dev,

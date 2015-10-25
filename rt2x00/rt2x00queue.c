@@ -34,21 +34,6 @@
 #include "rt2x00lib.h"
 #include <linux/pci.h>
 
-void queue_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
-{
-	unsigned char *pt;
-	int x;
-	pt = pSrcBufVA;
-	printk("%s: %p, len = %d\n", str, pSrcBufVA, SrcBufLen);
-	for (x = 0; x < SrcBufLen; x++) {
-		if (x % 16 == 0)
-			printk("0x%04x : ", x);
-		printk("%02x ", ((unsigned char)pt[x]));
-		if (x % 16 == 15)
-			printk("\n");
-	}
-	printk("\n");
-}
 struct sk_buff *rt2x00queue_alloc_rxskb(struct queue_entry *entry, gfp_t gfp)
 {
 	struct data_queue *queue = entry->queue;

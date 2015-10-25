@@ -48,30 +48,10 @@
 #include "rt2800.h"
 #include "rt2800pci.h"
 
-void MT_2800pci_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
+void rt2x00_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
 extern int AsicWaitPDMAIdle(struct rt2x00_dev *rt2x00dev, int round, int wait_us);
 extern void RTMPEnableRxTx(struct rt2x00_dev *rt2x00dev);
 
-#if 0
-static void rt2860_int_disable(struct rt2x00_dev *rt2x00dev, unsigned int mode)
-{
-	u32 regValue;
-
-	rt2x00dev->int_disable_mask |= mode;
-	regValue = 	rt2x00dev->int_enable_reg & ~(rt2x00dev->int_disable_mask);
-	rt2x00mmio_register_write(rt2x00dev, INT_MASK_CSR, regValue);     /* 0: disable */
-}
-
-static void rt2860_int_enable(struct rt2x00_dev *rt2x00dev, unsigned int mode)
-{
-	u32 regValue;
-
-	rt2x00dev->int_disable_mask &= ~(mode);
-	regValue = rt2x00dev->int_enable_reg & ~(rt2x00dev->int_disable_mask);		
-	rt2x00mmio_register_write(rt2x00dev, INT_MASK_CSR, regValue);     /* 1:enable */
-
-}
-#endif
 
 /*
  * Allow hardware encryption to be disabled.
@@ -996,22 +976,6 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 	skbdesc->desc_len = TXD_DESC_SIZE;
 }
 
-void MT_2800pci_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
-{
-	unsigned char *pt;
-	int x;
-	pt = pSrcBufVA;
-	printk("%s: %p, len = %d\n", str, pSrcBufVA, SrcBufLen);
-	for (x = 0; x < SrcBufLen; x++) {
-		if (x % 16 == 0)
-			printk("0x%04x : ", x);
-		printk("%02x ", ((unsigned char)pt[x]));
-		if (x % 16 == 15)
-			printk("\n");
-	}
-	printk("\n");
-}
-
 
 /*
  * RX control handlers
@@ -1032,7 +996,7 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
-			//MT_2800pci_hex_dump("rxd", rxd, 16);
+			//rt2x00_hex_dump("rxd", rxd, 16);
 			unsigned char hw_rx_info[16];
 			//unsigned char hw_fce[4];
 			//__le32 *destrxd = NULL;
@@ -1047,12 +1011,12 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 
 			
 			//rxd = &hw_rx_info[0];
-			//MT_2800pci_hex_dump("rxd", rxd, 16);
-			//MT_2800pci_hex_dump("skb->data(0)", entry->skb->data, 64);
+			//rt2x00_hex_dump("rxd", rxd, 16);
+			//rt2x00_hex_dump("skb->data(0)", entry->skb->data, 64);
 			//rt2x00_desc_read(hw_rx_info, 0, &word);
 			//rt2x00_desc_read(rxd, 3, &word);
 			
-			//MT_2800pci_hex_dump("skb->data(1)", entry->skb->data, entry->skb->len);
+			//rt2x00_hex_dump("skb->data(1)", entry->skb->data, entry->skb->len);
 			
 	} else {
 		rt2x00_desc_read(rxd, 3, &word);
@@ -1612,7 +1576,11 @@ static const struct ieee80211_ops rt2800pci_mac80211_ops = {
 	.sw_scan_start		= rt2x00mac_sw_scan_start,
 	.sw_scan_complete	= rt2x00mac_sw_scan_complete,
 	.get_stats		= rt2x00mac_get_stats,
+  #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
 	.get_tkip_seq		= rt2800_get_tkip_seq,
+  #else
+    .get_key_seq		= rt2800_get_key_seq,
+  #endif
 	.set_rts_threshold	= rt2800_set_rts_threshold,
 	.sta_add		= rt2x00mac_sta_add,
 	.sta_remove		= rt2x00mac_sta_remove,

@@ -571,7 +571,7 @@ void rt2x00mac_sw_scan_start(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 void rt2x00mac_sw_scan_complete(struct ieee80211_hw *hw)
 #else
 void rt2x00mac_sw_scan_complete(struct ieee80211_hw *hw,
-				struct ieee80211_vif *vif)
+                                struct ieee80211_vif *vif)
 #endif
 {
 	struct rt2x00_dev *rt2x00dev = hw->priv;
