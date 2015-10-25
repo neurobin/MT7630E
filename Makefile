@@ -1,4 +1,4 @@
-.PHONY: all clean install ninstall
+.PHONY: all clean install uninstall
 
 KDIR ?= /lib/modules/`uname -r`/build
 DST_DIR ?= /lib/modules/`uname -r`/kernel/drivers/net/wireless/
