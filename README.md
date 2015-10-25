@@ -33,13 +33,17 @@ To test it without installing, run:
 To uninstall, run:
 
       ./uninstall
-  
+
+To install with dkms:
+
+    sudo make dkms
  
 The driver will automatically load at startup.... 
 
 Source:
 -------
 
-      This copy of driver was taken from https://github.com/kuba-moo/mt7630e
+      The original source was taken from https://github.com/kuba-moo/mt7630e
+      Some patches for extended kernel support is taken from https://github.com/benjarobin/MT7630E
 
 <h2><a href="http://neurobin.github.io/MT7630E/">WebPage</a></h2>

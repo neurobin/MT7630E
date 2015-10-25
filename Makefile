@@ -26,7 +26,7 @@ uninstall:
 
 dkms:
 	cp -v firmware/*/* /lib/firmware/
-	cp -R . /usr/src/MT7630E-$(PKG_VER)
+	cp -R . /usr/src/mt7630e-$(PKG_VER)
 	dkms add -m mt7630e -v $(PKG_VER)
 	dkms build -m mt7630e -v $(PKG_VER)
 	dkms install -m mt7630e -v $(PKG_VER)
