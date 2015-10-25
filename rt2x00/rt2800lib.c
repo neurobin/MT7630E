@@ -471,7 +471,7 @@ static BANK_RF_REG_PAIR MT76x0_RF_2G_Channel_0_RegTb[] = {
 	{RF_BANK5,	RF_R69, 0xF0},
 	{RF_BANK5,	RF_R127, 0x04},
 };
-static unsigned int MT76x0_RF_2G_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_2G_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
+static const unsigned int MT76x0_RF_2G_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_2G_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
 
 static BANK_RF_REG_PAIR MT76x0_RF_5G_Channel_0_RegTb[] = {
 /*
@@ -547,7 +547,7 @@ static BANK_RF_REG_PAIR MT76x0_RF_5G_Channel_0_RegTb[] = {
 	{RF_BANK6,	RF_R64, 0xF1},
 	{RF_BANK6,	RF_R65, 0x0F},
 };
-static unsigned int MT76x0_RF_5G_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_5G_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
+static const unsigned int MT76x0_RF_5G_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_5G_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
 
 static BANK_RF_REG_PAIR MT76x0_RF_VGA_Channel_0_RegTb[] = {
 /*
@@ -600,7 +600,7 @@ static BANK_RF_REG_PAIR MT76x0_RF_VGA_Channel_0_RegTb[] = {
 	{RF_BANK7,	RF_R73, 0x34},
 	{RF_BANK7,	RF_R74, 0x00},
 };
-static unsigned int MT76x0_RF_VGA_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_VGA_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
+static const unsigned int MT76x0_RF_VGA_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_VGA_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
 
 static const MT76x0_RF_SWITCH_ITEM MT76x0_RF_BW_Switch[] =
 {
@@ -1264,7 +1264,7 @@ static void rt2800_rf_write(struct rt2x00_dev *rt2x00dev,
 
 
 
-static int rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
+static void rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 			       const u8 word, const u8 value,const u8 bank)
 {
 	RLT_RF_CSR_CFG rfcsr = { { 0 } };
@@ -1281,8 +1281,8 @@ static int rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 
 	if ((i == 100))
 	{
-		printk("rt2800_MT7630_rfcsr_write Retry count exhausted or device removed!!!\n");
-		return 0;
+		WARNING(rt2x00dev, "rt2800_MT7630_rfcsr_write Retry count exhausted or device removed!!!\n");
+ 		return;
 	}
 
 	rfcsr.field.RF_CSR_WR = 1;
@@ -1292,11 +1292,10 @@ static int rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 
 	rfcsr.field.RF_CSR_DATA = value;
 	rt2800_register_write(rt2x00dev, RF_CSR_CFG, rfcsr.word);
-    return 0;
 }
 
 
-static int rt2800_MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
+static void rt2800_MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
 			       const u8 word, u8 *value,const u8 bank)
 {
 	RLT_RF_CSR_CFG rfcsr = { { 0 } };
@@ -1338,7 +1337,6 @@ static int rt2800_MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
 	{																	
 		printk("RF read R%d=0x%X fail, i[%d], k[%d]\n", word, rfcsr.word,i,k);
 	}
-    return 0;
 }
 
 #if 0
@@ -8533,12 +8531,20 @@ static int rt2800_probe_hw_mode(struct rt2x00_dev *rt2x00dev)
 	/*
 	 * Initialize all hw fields.
 	 */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
 	rt2x00dev->hw->flags =
 	    IEEE80211_HW_SIGNAL_DBM |
 	    IEEE80211_HW_SUPPORTS_PS |
 	    IEEE80211_HW_PS_NULLFUNC_STACK |
 	    IEEE80211_HW_AMPDU_AGGREGATION |
 	    IEEE80211_HW_REPORTS_TX_ACK_STATUS;
+#else
+	ieee80211_hw_set(rt2x00dev->hw, SIGNAL_DBM);
+	ieee80211_hw_set(rt2x00dev->hw, SUPPORTS_PS);
+	ieee80211_hw_set(rt2x00dev->hw, PS_NULLFUNC_STACK);
+	ieee80211_hw_set(rt2x00dev->hw, AMPDU_AGGREGATION);
+	ieee80211_hw_set(rt2x00dev->hw, REPORTS_TX_ACK_STATUS);
+#endif
 
 	/*
 	 * Don't set IEEE80211_HW_HOST_BROADCAST_PS_BUFFERING for USB devices
@@ -8548,8 +8554,12 @@ static int rt2800_probe_hw_mode(struct rt2x00_dev *rt2x00dev)
 	 * infinitly and thus dropping it after some time.
 	 */
 	if (!rt2x00_is_usb(rt2x00dev))
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
 		rt2x00dev->hw->flags |=
 			IEEE80211_HW_HOST_BROADCAST_PS_BUFFERING;
+#else
+		ieee80211_hw_set(rt2x00dev->hw, HOST_BROADCAST_PS_BUFFERING);
+#endif
 
 	SET_IEEE80211_DEV(rt2x00dev->hw, rt2x00dev->dev);
 	SET_IEEE80211_PERM_ADDR(rt2x00dev->hw,
