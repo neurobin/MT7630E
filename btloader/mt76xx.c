@@ -953,11 +953,11 @@ static int usb_send_vendor_hci_cmd(struct usb_device *udev)
 			vendor_hci_cmd, sizeof(struct mtk_hci_tci_cmd), 
 			usb_vendor_hci_cmd_complete, udev);
 	/* debug print urb */
-	printk ("setup_packet in urb: size=%zu\n", sizeof(struct usb_ctrlrequest));
+	printk ("setup_packet in urb: size=%lu\n", sizeof(struct usb_ctrlrequest));
 	for (i=0; i<sizeof(struct usb_ctrlrequest); i++) {
 		printk ("%02x ", *((unsigned char *)urb->setup_packet + i));
 	}
-	printk ("\ntransfer_buffer in urb: size=%zu\n", sizeof(struct mtk_hci_tci_cmd));
+	printk ("\ntransfer_buffer in urb: size=%lu\n", sizeof(struct mtk_hci_tci_cmd));
 	for (i=0; i<sizeof(struct mtk_hci_tci_cmd); i++) {
 		printk ("%02x ", *((unsigned char *)urb->transfer_buffer + i));
 	}
@@ -1083,9 +1083,6 @@ static struct usb_device_id mtk_bt_loader_tbl[] = {
 	/* Mediatek MT662 */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7662, 0xe0, 0x01, 0x01) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7632, 0xe0, 0x01, 0x01) },
-	/* Foxconn / Hon Hai */
-	{ USB_DEVICE_AND_INTERFACE_INFO(0x0489, 0xe069, 0xe0, 0x01, 0x01) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(0x0489, 0xe069, 0xff, 0xff, 0xff) },
 	{ }	/* Terminating entry */
 };
 
@@ -1120,4 +1117,3 @@ MODULE_VERSION(VERSION);
 MODULE_LICENSE("GPL");
 MODULE_FIRMWARE(MT76x0_FIRMWARE);
 MODULE_FIRMWARE(MT76x2_FIRMWARE);
-MODULE_DEVICE_TABLE(usb, mtk_bt_loader_tbl);

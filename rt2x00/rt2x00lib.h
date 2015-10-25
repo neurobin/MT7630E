@@ -466,5 +466,4 @@ static inline void rt2x00leds_resume(struct rt2x00_dev *rt2x00dev)
 {
 }
 #endif /* CONFIG_RT2X00_LIB_LEDS */
-void hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
 #endif /* RT2X00LIB_H */

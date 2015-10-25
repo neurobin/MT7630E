@@ -101,7 +101,7 @@ int rt2x00lib_enable_radio(struct rt2x00_dev *rt2x00dev)
 	if (test_bit(DEVICE_STATE_ENABLED_RADIO, &rt2x00dev->flags))
 		return 0;
 
-	printk("===>%s\n",__FUNCTION__);
+	DEBUG(rt2x00dev, "===>\n");
 	/*
 	 * Initialize all data queues.
 	 */
@@ -1116,13 +1116,6 @@ static int rt2x00lib_probe_hw(struct rt2x00_dev *rt2x00dev)
 
 		status = kfifo_alloc(&rt2x00dev->txstatus_fifo, kfifo_size,
 				     GFP_KERNEL);
-
-	       //printk("woody 1\n");
-		//printk("woody 1\n");
-		//printk("woody 1\n");
-		//printk("woody 1\n");
-		//printk("woody 1\n");
-		//printk("woody 1\n");
 		
 		
 		if (status)
@@ -1228,8 +1221,7 @@ int rt2800_dev_wait_csr_ready(struct rt2x00_dev *rt2x00dev)
 		msleep(1);
 	}
 
-	//ERROR(rt2x00dev, "Unstable hardware.\n");
-	printk("Unstable hardware.\n");
+	DEBUG(rt2x00dev, "Unstable hardware.\n");
 	return -EBUSY;
 }
 
@@ -1241,7 +1233,7 @@ int rt2x00lib_start(struct rt2x00_dev *rt2x00dev)
 	if (test_bit(DEVICE_STATE_STARTED, &rt2x00dev->flags))
 		return 0;
 
-	printk("===>%s\n",__FUNCTION__);
+	DEBUG(rt2x00dev, "===>\n");
 
 #if 1
 	/*
@@ -1275,7 +1267,7 @@ int rt2x00lib_start(struct rt2x00_dev *rt2x00dev)
 		if (WaitForAsicReady(rt2x00dev) != 1)
 			return -EINVAL;
 		else
-			printk("ASIC is ready\n");
+			DEBUG(rt2x00dev, "ASIC is ready\n");
 	
 		if (rt2800_dev_wait_csr_ready(rt2x00dev))
 			return -EBUSY;
@@ -1350,7 +1342,7 @@ void rt2x00lib_stop(struct rt2x00_dev *rt2x00dev)
 	 * Perhaps we can add something smarter here,
 	 * but for now just disabling the radio should do.
 	 */
-	printk("===>%s\n",__FUNCTION__); 
+	DEBUG(rt2x00dev, "===>\n"); 
 	rt2x00lib_disable_radio(rt2x00dev);
 
 	rt2x00dev->intf_ap_count = 0;
@@ -1364,10 +1356,10 @@ void rt2x00lib_stop(struct rt2x00_dev *rt2x00dev)
 
 
 	rt2x00dev_pci_register_read(rt2x00dev, 0x20, &reg);	
-	printk("0x20 = 0x%x\n",reg);
+	DEBUG(rt2x00dev, "0x20 = 0x%x\n",reg);
 
 	rt2x00dev_pci_register_read(rt2x00dev, 0x80, &reg);	
-	printk("0x80 = 0x%x\n",reg);
+	DEBUG(rt2x00dev, "0x80 = 0x%x\n",reg);
 		
 }
 
@@ -1669,8 +1661,8 @@ void MT76x0_WLAN_ChipOnOff(
 	CMB_CTRL_STRUC CmbCtrl;
 
 	rt2x00dev_pci_register_read(rt2x00dev, WLAN_FUN_CTRL, &WlanFunCtrl.word);
-	printk("==>%s(): OnOff:%d pAd->WlanFunCtrl.word = 0x%x, Reg-WlanFunCtrl=0x%x\n",
-				__FUNCTION__, bOn, g_WlanFunCtrl.word,  WlanFunCtrl.word);
+	DEBUG(rt2x00dev, "==>OnOff:%d pAd->WlanFunCtrl.word = 0x%x, Reg-WlanFunCtrl=0x%x\n",
+				bOn, g_WlanFunCtrl.word,  WlanFunCtrl.word);
 
 	if (bResetWLAN == 1)
 	{
@@ -1685,12 +1677,12 @@ void MT76x0_WLAN_ChipOnOff(
 			*/					
 			WlanFunCtrl.field.WLAN_RESET_MT7630 = 1;
 			WlanFunCtrl.field.WLAN_RESET_RF_MT7630 = 1;
-			printk("Reset(1) WlanFunCtrl.word = 0x%x\n", WlanFunCtrl.word);
+			DEBUG(rt2x00dev, "Reset(1) WlanFunCtrl.word = 0x%x\n", WlanFunCtrl.word);
 			rt2x00dev_pci_register_write(rt2x00dev, WLAN_FUN_CTRL, WlanFunCtrl.word);	
 			udelay(50);
 			WlanFunCtrl.field.WLAN_RESET_MT7630 = 0;
 			WlanFunCtrl.field.WLAN_RESET_RF_MT7630 = 0;
-			printk("Reset(2) WlanFunCtrl.word = 0x%x\n", WlanFunCtrl.word);
+			DEBUG(rt2x00dev, "Reset(2) WlanFunCtrl.word = 0x%x\n", WlanFunCtrl.word);
 			rt2x00dev_pci_register_write(rt2x00dev, WLAN_FUN_CTRL, WlanFunCtrl.word);
 			udelay(50);
 		}
@@ -1716,14 +1708,14 @@ void MT76x0_WLAN_ChipOnOff(
 		WlanFunCtrl.field.WLAN_CLK_EN_MT7630 = 0;
 	}
 
-	printk("WlanFunCtrl.word = 0x%x\n", WlanFunCtrl.word);
+	DEBUG(rt2x00dev, "WlanFunCtrl.word = 0x%x\n", WlanFunCtrl.word);
 	rt2x00dev_pci_register_write(rt2x00dev, WLAN_FUN_CTRL, WlanFunCtrl.word);	
 	udelay(50);
 
 	if (bOn)
 	{
 		rt2x00dev_pci_register_read(rt2x00dev, MAC_CSR0, &MacReg);
-		printk("MACVersion = 0x%08x\n", MacReg);
+		DEBUG(rt2x00dev, "MACVersion = 0x%08x\n", MacReg);
 	}
 
 	if (bOn == 1)
@@ -1750,7 +1742,7 @@ void MT76x0_WLAN_ChipOnOff(
 
 			if (index >= 200)
 			{
-				printk("Lenny:[boundary]Check PLL_LD ..CMB_CTRL 0x%08x, index=%d!\n",
+				DEBUG(rt2x00dev, "Lenny:[boundary]Check PLL_LD ..CMB_CTRL 0x%08x, index=%d!\n",
 						CmbCtrl.word, index);
 				/*
 					Disable WLAN then enable WLAN again
@@ -1784,8 +1776,8 @@ void MT76x0_WLAN_ChipOnOff(
 
 	g_WlanFunCtrl.word = WlanFunCtrl.word;
 	rt2x00dev_pci_register_read(rt2x00dev, WLAN_FUN_CTRL, &WlanFunCtrl.word);
-	printk("<== %s():  pAd->WlanFunCtrl.word = 0x%x, Reg->WlanFunCtrl=0x%x!\n",
-		__FUNCTION__, g_WlanFunCtrl.word, WlanFunCtrl.word);
+	DEBUG(rt2x00dev, "<==pAd->WlanFunCtrl.word = 0x%x, Reg->WlanFunCtrl=0x%x!\n",
+		g_WlanFunCtrl.word, WlanFunCtrl.word);
 #endif
 }
 
@@ -1804,8 +1796,8 @@ int WaitForAsicReady(struct rt2x00_dev *rt2x00dev)
 		udelay(10);
 	} while (idx++ < 100);
 
-	printk("%s(0x%x):AsicNotReady!\n",
-				__FUNCTION__, mac_val);
+	DEBUG(rt2x00dev, "(0x%x):AsicNotReady!\n",
+				mac_val);
 	
 	return 0;
 }

@@ -48,30 +48,9 @@
 #include "rt2800.h"
 #include "rt2800pci.h"
 
-void MT_2800pci_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
+void rt2x00_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
 extern int AsicWaitPDMAIdle(struct rt2x00_dev *rt2x00dev, int round, int wait_us);
 extern void RTMPEnableRxTx(struct rt2x00_dev *rt2x00dev);
-
-#if 0
-static void rt2860_int_disable(struct rt2x00_dev *rt2x00dev, unsigned int mode)
-{
-	u32 regValue;
-
-	rt2x00dev->int_disable_mask |= mode;
-	regValue = 	rt2x00dev->int_enable_reg & ~(rt2x00dev->int_disable_mask);
-	rt2x00mmio_register_write(rt2x00dev, INT_MASK_CSR, regValue);     /* 0: disable */
-}
-
-static void rt2860_int_enable(struct rt2x00_dev *rt2x00dev, unsigned int mode)
-{
-	u32 regValue;
-
-	rt2x00dev->int_disable_mask &= ~(mode);
-	regValue = rt2x00dev->int_enable_reg & ~(rt2x00dev->int_disable_mask);		
-	rt2x00mmio_register_write(rt2x00dev, INT_MASK_CSR, regValue);     /* 1:enable */
-
-}
-#endif
 
 /*
  * Allow hardware encryption to be disabled.
@@ -452,15 +431,15 @@ loadfw_protect:
 			Loop++;
 		} while (Loop <= 20);
 
-		printk("%s: COM_REG0(0x%x) = 0x%x\n", __FUNCTION__, 0x0730, reg);
+		DEBUG(rt2x00dev, "COM_REG0(0x%x) = 0x%x\n", 0x0730, reg);
 
 		if (reg != 0x1)
 		{
 			rt2x00mmio_register_read(rt2x00dev, 0x0700, &reg);
-			printk("%s: 0x0700 = 0x%x\n", __FUNCTION__, val);
+			DEBUG(rt2x00dev, "0x0700 = 0x%x\n", val);
 
 			rt2x00mmio_register_read(rt2x00dev, 0x0704, &reg);
-			printk("%s: 0x%x = 0x%x\n", __FUNCTION__, 0x0704, val);
+			DEBUG(rt2x00dev, "0x%x = 0x%x\n", 0x0704, val);
 		}
 		else
 			rt2x00dev->MCUCtrl.IsFWReady = TRUE;
@@ -593,7 +572,7 @@ static int rt2800pci_init_queues(struct rt2x00_dev *rt2x00dev)
 			rt2x00mmio_register_write(rt2x00dev, TX_RING_BASE + offset, entry_priv->desc_dma);
 			rt2x00mmio_register_write(rt2x00dev, TX_RING_CNT + offset, rt2x00dev->tx[i].limit);
 			rt2x00mmio_register_write(rt2x00dev, TX_RING_CIDX + offset, 0);
-			printk("-->TX_RING: Base=0x%pad, Cnt=%d\n", &entry_priv->desc_dma,rt2x00dev->tx[i].limit);
+			DEBUG(rt2x00dev, "-->TX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->tx[i].limit);
 		}
 
 		offset = 4 * 0x10;
@@ -613,7 +592,7 @@ static int rt2800pci_init_queues(struct rt2x00_dev *rt2x00dev)
 
 		rt2x00mmio_register_write(rt2x00dev, RX_RING_CIDX + 0x10, rt2x00dev->rx[0].limit - 1);
 
-		printk("-->RX_RING: Base=0x%pad, Cnt=%d\n", &entry_priv->desc_dma,rt2x00dev->rx[0].limit);
+		DEBUG(rt2x00dev, "-->RX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->rx[0].limit);
 
 
 		
@@ -625,7 +604,7 @@ static int rt2800pci_init_queues(struct rt2x00_dev *rt2x00dev)
 	
 		ret = rt2800_wait_wpdma_ready(rt2x00dev);
 		if (ret != 0)
-			printk("DMA busy\n");
+			DEBUG(rt2x00dev, "DMA busy\n");
 
 
 		
@@ -742,17 +721,17 @@ static void rt2800pci_toggle_irq(struct rt2x00_dev *rt2x00dev,
 	spin_unlock_irqrestore(&rt2x00dev->irqmask_lock, flags);
 
 	if (state == STATE_RADIO_IRQ_ON && rt2x00_rt(rt2x00dev, MT7630)) {
-		printk("set INT_MASK_CSR = 0x%x\n",reg);
+		DEBUG(rt2x00dev, "set INT_MASK_CSR = 0x%x\n",reg);
 
 		RTMPEnableRxTx(rt2x00dev);
 
 		rt2x00mmio_register_read(rt2x00dev, 0x1300, &reg);  /* clear garbage interrupts*/
-		printk("0x1300 = %08x\n", reg);
+		DEBUG(rt2x00dev, "0x1300 = %08x\n", reg);
 
-		printk("%s(1):Check if PDMA is idle!\n", __FUNCTION__);
+		DEBUG(rt2x00dev, "(1):Check if PDMA is idle!\n");
 		AsicWaitPDMAIdle(rt2x00dev, 5, 10);
 
-		printk("%s(2):Check if PDMA is idle!\n", __FUNCTION__);
+		DEBUG(rt2x00dev, "(2):Check if PDMA is idle!\n");
 		AsicWaitPDMAIdle(rt2x00dev, 5, 10);
 	}
 	
@@ -928,7 +907,7 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 	TXINFO_STRUC *pTxInfo;
 	//printk("==>rt2800pci_write_tx_desc\n");
 
-	pTxD = (TXD_STRUC *) entry_priv->desc;
+	pTxD = (TXD_STRUC *)entry_priv->desc;
 	pTxInfo = (TXINFO_STRUC *)(entry_priv->desc + sizeof(TXD_STRUC));
 	memset(pTxD, 0, 16);
 	/*
@@ -945,7 +924,7 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
 		struct _TXINFO_NMAC_PKT *nmac_info;
-
+		
 		pTxD->SDPtr0 = skbdesc->skb_dma;
 		pTxD->SDLen0 = TXWI_DESC_SIZE_7630;	/* include padding*/
 		pTxD->SDPtr1 = skbdesc->skb_dma + TXWI_DESC_SIZE_7630;
@@ -996,23 +975,6 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 	skbdesc->desc_len = TXD_DESC_SIZE;
 }
 
-void MT_2800pci_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
-{
-	unsigned char *pt;
-	int x;
-	pt = pSrcBufVA;
-	printk("%s: %p, len = %d\n", str, pSrcBufVA, SrcBufLen);
-	for (x = 0; x < SrcBufLen; x++) {
-		if (x % 16 == 0)
-			printk("0x%04x : ", x);
-		printk("%02x ", ((unsigned char)pt[x]));
-		if (x % 16 == 15)
-			printk("\n");
-	}
-	printk("\n");
-}
-
-
 /*
  * RX control handlers
  */
@@ -1032,7 +994,7 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
-			//MT_2800pci_hex_dump("rxd", rxd, 16);
+			//rt2x00_hex_dump("rxd", rxd, 16);
 			unsigned char hw_rx_info[16];
 			//unsigned char hw_fce[4];
 			//__le32 *destrxd = NULL;
@@ -1040,19 +1002,19 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 			//memcpy(&hw_rx_info[0], rxd,12);
 			memcpy(&hw_rx_info[0], rxd,16);
 			//memcpy(&hw_fce[0], rxd+12,4);
-			pRxFceInfo = (RXFCE_INFO *) &hw_rx_info[12];
+			pRxFceInfo = (RXFCE_INFO *)&hw_rx_info[12];
 			//destrxd = (__le32 *) entry->skb->data; 	//woody
 			//memcpy(&hw_rx_info[12], destrxd,4);
-			pRxInfo = (RXINFO_STRUC *) entry->skb->data;
+			pRxInfo = (RXINFO_STRUC *)entry->skb->data;
 
 			
 			//rxd = &hw_rx_info[0];
-			//MT_2800pci_hex_dump("rxd", rxd, 16);
-			//MT_2800pci_hex_dump("skb->data(0)", entry->skb->data, 64);
+			//rt2x00_hex_dump("rxd", rxd, 16);
+			//rt2x00_hex_dump("skb->data(0)", entry->skb->data, 64);
 			//rt2x00_desc_read(hw_rx_info, 0, &word);
 			//rt2x00_desc_read(rxd, 3, &word);
 			
-			//MT_2800pci_hex_dump("skb->data(1)", entry->skb->data, entry->skb->len);
+			//rt2x00_hex_dump("skb->data(1)", entry->skb->data, entry->skb->len);
 			
 	} else {
 		rt2x00_desc_read(rxd, 3, &word);
@@ -1062,7 +1024,7 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 			{
 				if (pRxInfo->Crc)
 				{
-					printk("crc error\n");
+					DEBUG(rt2x00dev, "crc error\n");
 					rxdesc->flags |= RX_FLAG_FAILED_FCS_CRC;
 				}
 
@@ -1073,10 +1035,10 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 			 */
 				rxdesc->cipher_status = pRxInfo->CipherErr;//rt2x00_get_field32(word, RXD_W3_CIPHER_ERROR);
 				if (rxdesc->cipher_status)
-					printk("crc RXD_W3_CIPHER_ERROR\n");
+					DEBUG(rt2x00dev, "crc RXD_W3_CIPHER_ERROR\n");
 
 				if (pRxInfo->Decrypted) {
-					vend_dbg("Decrypted\n");
+					DEBUG(rt2x00dev, "Decrypted\n");
 					/*
 					 * Hardware has stripped IV/EIV data from 802.11 frame during
 					 * decryption. Unfortunately the descriptor doesn't contain
@@ -1113,7 +1075,7 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 		}  else {			
 			if (rt2x00_get_field32(word, RXD_W3_CRC_ERROR))
 			{
-			printk("crc error\n");
+			DEBUG(rt2x00dev, "crc error\n");
 			rxdesc->flags |= RX_FLAG_FAILED_FCS_CRC;
 			}
 	/*
@@ -1123,7 +1085,7 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 	 */
 	rxdesc->cipher_status = rt2x00_get_field32(word, RXD_W3_CIPHER_ERROR);
 	if (rxdesc->cipher_status)
-		printk("crc RXD_W3_CIPHER_ERROR\n");
+		DEBUG(rt2x00dev, "crc RXD_W3_CIPHER_ERROR\n");
 	if (rt2x00_get_field32(word, RXD_W3_DECRYPTED)) {
 		/*
 		 * Hardware has stripped IV/EIV data from 802.11 frame during
@@ -1258,7 +1220,7 @@ static bool rt2800pci_txdone(struct rt2x00_dev *rt2x00dev)
 	int max_tx_done = 16;
 	TX_STA_FIFO_STRUC	StaFifo;
 	while (kfifo_get(&rt2x00dev->txstatus_fifo, &status)) {
-		vend_dbg("rt2800pci_txdone status = 0x%x\n",status);
+		DEBUG(rt2x00dev, "rt2800pci_txdone status = 0x%x\n",status);
 		StaFifo.word = status;
 		qid =  (UCHAR)StaFifo.field.PidType;//rt2x00_get_field32(status, TX_STA_FIFO_PID_QUEUE);
 			
@@ -1273,7 +1235,7 @@ static bool rt2800pci_txdone(struct rt2x00_dev *rt2x00dev)
 			break;
 		}
 
-		vend_dbg("rt2800pci_txdone qid = 0x%x\n",qid);
+		DEBUG(rt2x00dev, "rt2800pci_txdone qid = 0x%x\n",qid);
 		queue = rt2x00queue_get_tx_queue(rt2x00dev, qid);
 		if (unlikely(queue == NULL)) {
 			/*
@@ -1334,16 +1296,17 @@ static inline void rt2800pci_enable_interrupt(struct rt2x00_dev *rt2x00dev,
 					      struct rt2x00_field32 irq_field)
 {
 	u32 reg;
+	unsigned long irqflags;
 
 	/*
 	 * Enable a single interrupt. The interrupt mask register
 	 * access needs locking.
 	 */
-	spin_lock_irq(&rt2x00dev->irqmask_lock);
+	spin_lock_irqsave(&rt2x00dev->irqmask_lock, irqflags);
 	rt2x00mmio_register_read(rt2x00dev, INT_MASK_CSR, &reg);
 	rt2x00_set_field32(&reg, irq_field, 1);
 	rt2x00mmio_register_write(rt2x00dev, INT_MASK_CSR, reg);
-	spin_unlock_irq(&rt2x00dev->irqmask_lock);
+	spin_unlock_irqrestore(&rt2x00dev->irqmask_lock, irqflags);
 }
 
 static void rt2800pci_txstatus_tasklet(unsigned long data)
@@ -1483,14 +1446,13 @@ static void rt2800pci_txstatus_interrupt(struct rt2x00_dev *rt2x00dev)
 		}		
 #endif
 		Fifi_Status.field.PidType = (Fifi_Status_ext.field.TX_PKT_ID == 5)? 0:Fifi_Status_ext.field.TX_PKT_ID;
-		vend_dbg("0x%x (status)\n",Fifi_Status.word);
+		DEBUG(rt2x00dev, "0x%x (status)\n",Fifi_Status.word);
 		status = Fifi_Status.word;
 
-		//woody_kfifo_put(&rt2x00dev->txstatus_fifo, &status);
 		if (!kfifo_put(&rt2x00dev->txstatus_fifo, status)) {
 			WARNING(rt2x00dev, "TX status FIFO overrun,"
 				"drop tx status report.\n");
-			printk("TX status FIFO overrun, drop tx status report\n");
+			DEBUG(rt2x00dev, "TX status FIFO overrun, drop tx status report\n");
 			break;
 		}
 	}
@@ -1544,7 +1506,7 @@ static irqreturn_t rt2800pci_interrupt(int irq, void *dev_instance)
 			tasklet_schedule(&rt2x00dev->autowake_tasklet);
 #if 1
 		if (rt2x00_get_field32(reg, INT_SOURCE_CSR_7630_HCCA_DMA_DONE)) {
-			printk("==>INT_SOURCE_CSR_7630_HCCA_DMA_DONE\n");
+			DEBUG(rt2x00dev, "==>INT_SOURCE_CSR_7630_HCCA_DMA_DONE\n");
 			tasklet_schedule(&rt2x00dev->tx8damdone_tasklet);
 			//return IRQ_HANDLED;
 		}
@@ -1612,7 +1574,11 @@ static const struct ieee80211_ops rt2800pci_mac80211_ops = {
 	.sw_scan_start		= rt2x00mac_sw_scan_start,
 	.sw_scan_complete	= rt2x00mac_sw_scan_complete,
 	.get_stats		= rt2x00mac_get_stats,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
 	.get_tkip_seq		= rt2800_get_tkip_seq,
+#else
+    .get_key_seq		= rt2800_get_key_seq,
+#endif
 	.set_rts_threshold	= rt2800_set_rts_threshold,
 	.sta_add		= rt2x00mac_sta_add,
 	.sta_remove		= rt2x00mac_sta_remove,

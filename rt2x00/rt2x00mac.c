@@ -355,8 +355,7 @@ void rt2x00mac_configure_filter(struct ieee80211_hw *hw,
 	    FIF_PLCPFAIL |
 	    FIF_CONTROL |
 	    FIF_PSPOLL |
-	    FIF_OTHER_BSS |
-	    FIF_PROMISC_IN_BSS;
+	    FIF_OTHER_BSS;
 
 	/*
 	 * Apply some rules to the filters:
@@ -365,9 +364,6 @@ void rt2x00mac_configure_filter(struct ieee80211_hw *hw,
 	 * - Multicast filter seems to kill broadcast traffic so never use it.
 	 */
 	*total_flags |= FIF_ALLMULTI;
-	if (*total_flags & FIF_OTHER_BSS ||
-	    *total_flags & FIF_PROMISC_IN_BSS)
-		*total_flags |= FIF_PROMISC_IN_BSS | FIF_OTHER_BSS;
 
 	/*
 	 * If the device has a single filter for all control frames,
@@ -573,7 +569,7 @@ void rt2x00mac_sw_scan_start(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 void rt2x00mac_sw_scan_complete(struct ieee80211_hw *hw)
 #else
 void rt2x00mac_sw_scan_complete(struct ieee80211_hw *hw,
-				struct ieee80211_vif *vif)
+                                struct ieee80211_vif *vif)
 #endif
 {
 	struct rt2x00_dev *rt2x00dev = hw->priv;

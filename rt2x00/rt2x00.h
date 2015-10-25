@@ -52,7 +52,7 @@
 /*
  * Module information.
  */
-#define DRV_VERSION	"2.3.0"
+#define DRV_VERSION	"2.3.4"
 #define DRV_PROJECT	"http://rt2x00.serialmonkey.com"
 
 
@@ -472,12 +472,12 @@ enum CALIBRATION_ID {
 typedef	union _TX_STA_FIFO_EXT_STRUC {
 	struct
 	{
-		ULONG TX_RTY_CNT:8; // Tx retry count
-		ULONG TX_PKT_ID:8; // Tx packet ID (copied from per-packet TXWI)
-		ULONG Reserved:16;
+		u32 TX_RTY_CNT:8; // Tx retry count
+		u32 TX_PKT_ID:8; // Tx packet ID (copied from per-packet TXWI)
+		u32 Reserved:16;
 	} field;
 
-	UINT word;
+	u32 word;
 } TX_STA_FIFO_EXT_STRUC;
 
 
@@ -1437,11 +1437,6 @@ typedef	union GNU_PACKED _RXWI_STRUC {
 	do { } while (0)
 #endif /* CONFIG_RT2X00_DEBUG */
 
-#if 0
-#define vend_dbg(fmt...) printk(fmt)
-#else
-#define vend_dbg(fmt...) do {} while(0)
-#endif
 
 #define WARNING(__dev, __msg, __args...) \
 	DEBUG_PRINTK(__dev, KERN_WARNING, "Warning", __msg, ##__args)
@@ -1449,7 +1444,7 @@ typedef	union GNU_PACKED _RXWI_STRUC {
 	DEBUG_PRINTK(__dev, KERN_NOTICE, "Notice", __msg, ##__args)
 #define INFO(__dev, __msg, __args...) \
 	DEBUG_PRINTK(__dev, KERN_INFO, "Info", __msg, ##__args)
-#define DBG(__dev, __msg, __args...) \
+#define DEBUG(__dev, __msg, __args...) \
 	DEBUG_PRINTK(__dev, KERN_DEBUG, "Debug", __msg, ##__args)
 #define EEPROM(__dev, __msg, __args...) \
 	DEBUG_PRINTK(__dev, KERN_DEBUG, "EEPROM recovery", __msg, ##__args)
@@ -2355,6 +2350,7 @@ struct rt2x00_dev {
 	 */
 	struct work_struct rxdone_work;
 	struct work_struct txdone_work;
+	work_func_t txdone_workfn;
 
 	/*
 	 * Powersaving work
@@ -2865,13 +2861,7 @@ ra_dma_addr_t RtmpDrvPciMapSingle(
 	IN size_t size,
 	IN INT sd_idx,
 	IN INT direction);
-ra_dma_addr_t RtmpDrvPciUnMapSingle(
-	IN struct rt2x00_dev *rt2x00dev,
-	IN ra_dma_addr_t ptr,
-	IN size_t size,
-	IN INT direction);
 #define PCI_MAP_SINGLE					RtmpDrvPciMapSingle
-#define PCI_UNMAP_SINGLE					RtmpDrvPciUnMapSingle
 VOID TDDFDDExclusiveRequest(
         IN struct rt2x00_dev *rt2x00dev, 
 	UCHAR CoexMode 
@@ -2920,11 +2910,6 @@ VOID MT76x0_Calibration(
 VOID NICUpdateRawCounters(
 	struct rt2x00_dev *rt2x00dev);
 
-VOID SendLEDCmd(
-	struct rt2x00_dev *rt2x00dev,
-	IN ULONG	LEDMode,
-	IN ULONG	Para);
-
 void RtmpAllocDescBuf(
 	IN struct rt2x00_dev *rt2x00dev,
 	IN UINT Index,
@@ -2934,7 +2919,7 @@ void RtmpAllocDescBuf(
 	OUT PNDIS_PHYSICAL_ADDRESS	phy_addr);
 
 VOID dumpTxWI(struct rt2x00_dev *rt2x00dev, TXWI_STRUC *pTxWI);
-void hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
+void rt2x00_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
 
 VOID SendAndesWLANStatus(
 	IN struct rt2x00_dev *rt2x00dev,
