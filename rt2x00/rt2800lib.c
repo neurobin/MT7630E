@@ -8995,7 +8995,11 @@ u64 rt2800_get_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 int rt2800_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 			enum ieee80211_ampdu_mlme_action action,
 			struct ieee80211_sta *sta, u16 tid, u16 *ssn,
-			u8 buf_size)
+			u8 buf_size
+            #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0)
+			, bool amsdu
+            #endif
+            )
 {
 	struct rt2x00_sta *sta_priv = (struct rt2x00_sta *)sta->drv_priv;
 	int ret = 0;
