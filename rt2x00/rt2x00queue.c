@@ -707,6 +707,7 @@ int rt2x00queue_write_tx_frame(struct data_queue *queue, struct sk_buff *skb,
 
 	entry = rt2x00queue_get_entry(queue, Q_INDEX);
 
+	/* Avoid to abort. The kernel will reload the module
 	if (unlikely(test_and_set_bit(ENTRY_OWNER_DEVICE_DATA,
 				      &entry->flags))) {
 		rt2x00_err(queue->rt2x00dev,
@@ -716,6 +717,7 @@ int rt2x00queue_write_tx_frame(struct data_queue *queue, struct sk_buff *skb,
 		ret = -EINVAL;
 		goto out;
 	}
+	*/
 
 	skbdesc->entry = entry;
 	entry->skb = skb;
