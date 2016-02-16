@@ -39,7 +39,7 @@
 
 #include "mt76xx.h"
 
-#define VERSION "1.0.0"
+#define VERSION "2.0.3"
 #define MT76x0_FIRMWARE	"mt76x0.bin"
 #define MT76x2_FIRMWARE	"mt76x2.bin"
 
