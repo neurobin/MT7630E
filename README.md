@@ -60,7 +60,7 @@ modprobe: ERROR: could not insert 'mt76xx': Exec format error
 ```
 
 ###3.2 DKMS 
--------
+
 If you install with dkms then you won't need to uninstall/install for minor kernel updates. Major kernel updates may still need update/uninstall/install though.
 
 Source:
