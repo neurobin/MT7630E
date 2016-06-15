@@ -9009,6 +9009,11 @@ int rt2800_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	enum ieee80211_ampdu_mlme_action action = params->action;
 	struct ieee80211_sta *sta = params->sta;
 	u16 tid = params->tid;
+	/*
+	u16 *ssn = &params->ssn;
+	u8 buf_size = params->buf_size;
+	bool amsdu = params->amsdu;
+	*/
 #endif
 
 	struct rt2x00_sta *sta_priv = (struct rt2x00_sta *)sta->drv_priv;
