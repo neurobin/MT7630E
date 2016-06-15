@@ -40,6 +40,29 @@ To install with dkms:
  
 The driver will automatically load at startup.... 
 
+3. Troubleshooting when upgrading kernel
+----------------
+###3.1 Install script
+
+If you installed the driver with the `install` script, you will have to reinstall the drivers when you upgrade your kernel.
+
+To do so, run: 
+```sh
+./uninstall
+make clean
+./install
+```
+
+If you don't uninstall and clean, you will face problems like this: 
+```
+modprobe: ERROR: could not insert 'mt7630e': Exec format error
+modprobe: ERROR: could not insert 'mt76xx': Exec format error
+```
+
+###3.2 DKMS 
+
+If you install with dkms then you won't need to uninstall/install for minor kernel updates. Major kernel updates may still need update/uninstall/install though.
+
 Source:
 -------
 
