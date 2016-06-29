@@ -1,0 +1,62 @@
+#!/bin/bash
+BASEDIR="$(dirname "$BASH_SOURCE")"
+cd "$BASEDIR"
+if (( $EUID != 0 )); then
+    printf "\n-----Sorry! Run with root privilege\n\n"
+    exit 1
+fi
+# To manually update the bluetooth read the doc in
+# https://github.com/neurobin/MT7630E/wiki/Get-bluetooth-working-in-Linux-kernel--with-mt7630e
+echo "--- Stoping Bluetooth..."
+service bluetooth stop #Stop the bluetooth
+echo "--- Installing kernel headers..."
+apt-get install build-essential linux-headers-$(uname -r)
+mkdir build/
+cd build/
+rm -rf build_$(uname -r)
+mkdir build_$(uname -r)
+cd build_$(uname -r)
+echo "--- Downloading kernel source..."
+apt-get source linux-image-$(uname -r)    # Get the kernel source code
+echo "--- Building kernel dependencies... (may be facultative)"
+apt-get build-dep linux-image-$(uname -r) # Build kernel dependencies 
+cd $(ls -d */ | head -1)
+echo "--- Copying configuration..."
+cp "/boot/config-$(uname -r)" .config
+cp "/usr/src/linux-headers-$(uname -r)/Module.symvers" .
+cd drivers/bluetooth/
+echo "--- Patching..."
+cp btusb.c btusb.c.old
+interestingLine=$(cat btusb.c | grep -e "#define BTUSB_.*0x[1248]0*$" | tail -1)
+echo "interestingLine = $interestingline"
+interestingNumber=$(echo $interestingLine | sed 's/^.*\(0x[0-9]*\)$/\1/g')
+echo "interestingNumber = $interestingNumber"
+newNumber=$(printf "0x%X\n" $(($interestingNumber + $interestingNumber)))
+echo "newNumber = $newNumber"
+# Add the line #define BTUSB_MEDIATEK
+sed -i "s/$interestingLine/$interestingLine\n#define BTUSB_MEDIATEK     $newNumber/g" btusb.c
+# Add driver_info = BTUSB_MEDIATEK
+sed -i "s/{ USB_DEVICE(0x0e8d, 0x763f) },/{ USB_DEVICE(0x0e8d, 0x763f), .driver_info = BTUSB_MEDIATEK },/g" btusb.c
+# Add set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, &hdev->quirks);
+sed -i "s/set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);/set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);\n   }\n   if (id->driver_info \& BTUSB_MEDIATEK) {\n      set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);\n/g" btusb.c
+cd ../../
+echo "--- make prepare"
+make prepare
+echo "--- make modules_prepare"
+make modules_prepare
+echo "--- make M=scripts/mod"
+make M=scripts/mod
+echo "--- make M=drivers/bluetooth/ modules"
+make M=drivers/bluetooth/ modules
+echo "--- Saving old .ko"
+cp -f /lib/modules/$(uname -r)/kernel/drivers/bluetooth/btusb.ko /lib/modules/$(uname -r)/kernel/drivers/bluetooth/btusb.ko.old
+echo "--- Copying new .ko"
+cp drivers/bluetooth/btusb.ko /lib/modules/$(uname -r)/kernel/drivers/bluetooth
+echo "--- Starting bluetooth (maybe you would need a reboot to have bluetooth enabled)."
+echo "=====  /\ ============================================="
+echo "===   /  \     In order to have bluetooth enabled ====="
+echo "===  /  | \    you show reboot your computer.     ====="
+echo "=== /___o__\==========================================="
+echo "I will try to load it, but if nothing happend, please reboot."
+service bluetooth start; true
+systemctl restart bluetooth.service; true

@@ -1,0 +1,20 @@
+BASEDIR="$(dirname "$BASH_SOURCE")"
+cd "$BASEDIR"
+if (( $EUID != 0 )); then
+    printf "\n-----Sorry! Run with root privilege\n\n"
+    exit 1
+fi
+echo "--- Stoping Bluetooth..."
+service bluetooth stop
+if [ -f "/lib/modules/$(uname -r)/kernel/drivers/bluetooth/btusb.ko.old" ];
+then
+   echo "--- Old installation found, saving current..."
+   cp "/lib/modules/$(uname -r)/kernel/drivers/bluetooth/btusb.ko" "/lib/modules/$(uname -r)/kernel/drivers/bluetooth/btusb.ko.old2"
+   echo "--- And restoring the old one..."
+   cp "/lib/modules/$(uname -r)/kernel/drivers/bluetooth/btusb.ko.old" "/lib/modules/$(uname -r)/kernel/drivers/bluetooth/btusb.ko"
+   echo "Done !"
+else
+   echo "I didn't find an older installation..."
+fi
+   
+   
