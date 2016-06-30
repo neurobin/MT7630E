@@ -39,7 +39,7 @@
 
 #include "mt76xx.h"
 
-#define VERSION "2.0.3"
+#define VERSION "2.0.4"
 #define MT76x0_FIRMWARE	"mt76x0.bin"
 #define MT76x2_FIRMWARE	"mt76x2.bin"
 
@@ -1086,6 +1086,8 @@ static struct usb_device_id mtk_bt_loader_tbl[] = {
 	/* Foxconn / Hon Hai */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0489, 0xe069, 0xe0, 0x01, 0x01) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0489, 0xe069, 0xff, 0xff, 0xff) },
+    { USB_DEVICE_AND_INTERFACE_INFO(0x0489, 0xe080, 0xe0, 0x01, 0x01) },
+    { USB_DEVICE_AND_INTERFACE_INFO(0x0489, 0xe080, 0xff, 0xff, 0xff) },
 	{ }	/* Terminating entry */
 };
 
