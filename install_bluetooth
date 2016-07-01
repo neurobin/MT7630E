@@ -32,9 +32,9 @@ cp btusb.c btusb.c.old
 if ! grep -e "^[[:blank:]]*#define BTUSB_MEDIATEK[[:blank:]].*" btusb.c >/dev/null; then
     interestingLine=$(grep -e "^[[:blank:]]*#define BTUSB_.*0x[1248]0*[[:blank:]]*$" btusb.c | tail -1)
     echo "interestingLine = $interestingline"
-    interestingNumber=$(echo $interestingLine | sed 's/^.*\(0x[0-9]*\)[[:blank:]]*$/\1/g')
+    interestingNumber=$(echo "$interestingLine" | sed 's/^.*\(0x[0-9]*\)[[:blank:]]*$/\1/g')
     echo "interestingNumber = $interestingNumber"
-    newNumber=$(printf "0x%X\n" $(($(echo "$interestingNumber") + $(echo "$interestingNumber"))))
+    newNumber=$(printf "0x%X\n" $(($interestingNumber + $interestingNumber)))
     echo "newNumber = $newNumber"
     # Add the line #define BTUSB_MEDIATEK
     sed -i "s/$interestingLine/&\n#define BTUSB_MEDIATEK     $newNumber/" btusb.c
