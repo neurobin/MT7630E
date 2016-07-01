@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 BASEDIR="$(dirname "$BASH_SOURCE")"
 cd "$BASEDIR"
 if (( $EUID != 0 )); then
@@ -11,15 +12,16 @@ echo "--- Stoping Bluetooth..."
 service bluetooth stop #Stop the bluetooth
 echo "--- Installing kernel headers..."
 apt-get install build-essential linux-headers-$(uname -r)
-mkdir build/
+mkdir -p build/
 cd build/
 rm -rf build_$(uname -r)
 mkdir build_$(uname -r)
 cd build_$(uname -r)
 echo "--- Downloading kernel source..."
+apt-get update
 apt-get source linux-image-$(uname -r)    # Get the kernel source code
 echo "--- Building kernel dependencies... (may be facultative)"
-apt-get build-dep linux-image-$(uname -r) # Build kernel dependencies 
+apt-get build-dep linux-image-$(uname -r); true # Build kernel dependencies 
 cd $(ls -d */ | head -1)
 echo "--- Copying configuration..."
 cp "/boot/config-$(uname -r)" .config
@@ -27,18 +29,30 @@ cp "/usr/src/linux-headers-$(uname -r)/Module.symvers" .
 cd drivers/bluetooth/
 echo "--- Patching..."
 cp btusb.c btusb.c.old
-interestingLine=$(cat btusb.c | grep -e "#define BTUSB_.*0x[1248]0*$" | tail -1)
-echo "interestingLine = $interestingline"
-interestingNumber=$(echo $interestingLine | sed 's/^.*\(0x[0-9]*\)$/\1/g')
-echo "interestingNumber = $interestingNumber"
-newNumber=$(printf "0x%X\n" $(($interestingNumber + $interestingNumber)))
-echo "newNumber = $newNumber"
-# Add the line #define BTUSB_MEDIATEK
-sed -i "s/$interestingLine/$interestingLine\n#define BTUSB_MEDIATEK     $newNumber/g" btusb.c
+if ! grep -e "^[[:blank:]]*#define BTUSB_MEDIATEK[[:blank:]].*" btusb.c >/dev/null; then
+    interestingLine=$(cat btusb.c | grep -e "^[[:blank:]]*#define BTUSB_.*0x[1248]0*[[:blank:]]*$" | tail -1)
+    echo "interestingLine = $interestingline"
+    interestingNumber=$(echo $interestingLine | sed 's/^.*\(0x[0-9]*\)$/\1/g')
+    echo "interestingNumber = $interestingNumber"
+    newNumber=$(printf "0x%X\n" $(($interestingNumber + $interestingNumber)))
+    echo "newNumber = $newNumber"
+    # Add the line #define BTUSB_MEDIATEK
+    sed -i "s/$interestingLine/&\n#define BTUSB_MEDIATEK     $newNumber/" btusb.c
+fi
 # Add driver_info = BTUSB_MEDIATEK
-sed -i "s/{ USB_DEVICE(0x0e8d, 0x763f) },/{ USB_DEVICE(0x0e8d, 0x763f), .driver_info = BTUSB_MEDIATEK },/g" btusb.c
+sed -i "s/{ USB_DEVICE(0x0e8d, 0x763f) },/{ USB_DEVICE(0x0e8d, 0x763f), .driver_info = BTUSB_MEDIATEK },/" btusb.c
 # Add set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, &hdev->quirks);
-sed -i "s/set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);/set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);\n   }\n   if (id->driver_info \& BTUSB_MEDIATEK) {\n      set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);\n/g" btusb.c
+sed -i "s/set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);/&\n   }\n   if (id->driver_info \& BTUSB_MEDIATEK) {\n      set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);\n/" btusb.c
+
+# This other version doesn't focus on the good line, and the good line
+#   if (id->driver_info & BTUSB_INTEL_BOOT) {
+# is present twice...
+# patch='\n\tif (id->driver_info \& BTUSB_MEDIATEK) { \n\t\tset_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);\n\t}\n'
+# if ! grep -A2 -e 'if (id->driver_info & BTUSB_MEDIATEK)' btusb.c |
+# 	grep -e 'set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, &hdev->quirks);' >/dev/null; then
+#     echo "I'm in the file"
+#     sed -i "s/^[[:blank:]]*if[[:blank:]]*(id->driver_info & BTUSB_INTEL)/$patch\n&/" btusb.c
+# fi
 cd ../../
 echo "--- make prepare"
 make prepare

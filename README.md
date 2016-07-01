@@ -40,7 +40,7 @@ To install with dkms:
  
 The driver will automatically load at startup...
 
-After you have a working internet connection, install bluetooth with
+After having a working internet connection *and disabled the secure boot if you have one*, install bluetooth with
 
     sudo ./install_bluetooth
 	

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 BASEDIR="$(dirname "$BASH_SOURCE")"
 cd "$BASEDIR"
 if (( $EUID != 0 )); then
