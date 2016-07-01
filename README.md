@@ -38,7 +38,15 @@ To install with dkms:
 
     sudo make dkms
  
-The driver will automatically load at startup.... 
+The driver will automatically load at startup...
+
+After having a working internet connection *and disabled the secure boot if you have one*, install bluetooth with
+
+    sudo ./install_bluetooth
+	
+and to uninstall it :
+
+    sudo ./uninstall_bluetooth
 
 3. Troubleshooting when upgrading kernel
 ----------------
