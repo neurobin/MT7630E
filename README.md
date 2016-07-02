@@ -1,4 +1,4 @@
-Easy installation package for the official driver at http://www.mediatek.com/en/downloads/mt7630-pcie/
+Easy installation package for Mediatek MT7630E Wifi + Bluetooth Combo Linux Driver. The official driver was found at http://www.mediatek.com/en/downloads/mt7630-pcie/ (this link no longer exists)
 
 
 #1. Component
