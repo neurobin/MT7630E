@@ -1,22 +1,15 @@
-MT7630E
-=======
 Easy installation package for the official driver at http://www.mediatek.com/en/downloads/mt7630-pcie/
 
 
-***************************************************************************************************************************
-                                  Mediatek MT7630E Combo Linux Driver User Guide
-***************************************************************************************************************************
+#1. Component
 
-1. Component
-------------
 
 * rt2x00: Wi-Fi driver source code
 * btloader: Bluetooth firmware loader source code
 * firmware: Firmware binary code (MT7650E234.bin is for Wi-Fi, mt76x0.bin is for Bluetooth)
 
 
-2. Installation
-----------------
+#2. Installation
 
 First give some file execution permission:
 
@@ -84,8 +77,8 @@ If you have already downloaded the kernel source, then give the source directory
 sudo ./bpatch -sd /path/to/kernel/source/dir
 ```
 
-3. Troubleshooting when upgrading kernel
-----------------
+#3. Troubleshooting when upgrading kernel
+
 ###3.1 Install script
 
 If you installed the driver with the `install` script, you will have to reinstall the drivers when you upgrade your kernel.
@@ -108,17 +101,15 @@ modprobe: ERROR: could not insert 'mt76xx': Exec format error
 If you install with dkms then you won't need to uninstall/install for minor kernel updates. Major kernel updates may still need update/uninstall/install though.
 
 
-Secure Boot
----------------
+##Secure Boot
+
 Not being signed, this driver is not expected to work on secure boot.
 
 
-Source:
--------
+##Source:
 
       The original source was taken from https://github.com/kuba-moo/mt7630e
       Some patches for extended kernel support are taken from https://github.com/benjarobin/MT7630E
       
 Note: Even though the original source was taken from kuba-moo, it no longer resembles that of the original. If you want to apply a patch that works with other sources, be ware that the line number and content may or may not match i.e you will have to be careful applying patches.
 
-<h2><a href="http://neurobin.github.io/MT7630E/">WebPage</a></h2>
