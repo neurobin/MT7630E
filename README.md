@@ -103,7 +103,7 @@ If you install with dkms then you won't need to uninstall/install for minor kern
 
 ##Secure Boot
 
-Not being signed, this driver is not expected to work on secure boot.
+Not being signed, this driver is **not expected to work on secure boot**.
 
 
 ##Source:
