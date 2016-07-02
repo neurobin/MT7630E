@@ -108,8 +108,8 @@ Not being signed, this driver is not expected to work on secure boot.
 
 ##Source:
 
-      The original source was taken from https://github.com/kuba-moo/mt7630e
-      Some patches for extended kernel support are taken from https://github.com/benjarobin/MT7630E
+    The original source was taken from https://github.com/kuba-moo/mt7630e
+    Some patches for extended kernel support are taken from https://github.com/benjarobin/MT7630E
       
-Note: Even though the original source was taken from kuba-moo, it no longer resembles that of the original. If you want to apply a patch that works with other sources, be ware that the line number and content may or may not match i.e you will have to be careful applying patches.
+**Note:** Even though the original source was taken from kuba-moo, it no longer resembles that of the original. If you want to apply a patch that works with other sources, be ware that the line number and content may or may not match i.e you will have to be careful applying patches.
 
