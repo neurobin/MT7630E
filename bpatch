@@ -11,7 +11,7 @@
 ##############################################################################################################
 
 p_name="$(basename "$BASH_SOURCE")"
-p_version='1.0.0'
+p_version='1.0.1'
 p_author='tobiasBora (https://github.com/tobiasBora)'
 p_c_author='Md Jahidul Hamid (https://github.com/neurobin)'
 p_bugt='https://github.com/neurobin/MT7630E/issues'
@@ -133,6 +133,7 @@ service bluetooth stop ||
 systemctl stop bluetooth.service || true
 
 echo "*** Installing kernel headers..."
+apt-get update || true
 apt-get install build-essential linux-headers-$(uname -r)
 
 mkdir -p build/
@@ -143,7 +144,6 @@ cd build_$(uname -r)
 
 if ! $skipd; then
     echo "*** Downloading kernel source..."
-    apt-get update
     apt-get source linux-image-$(uname -r)    # Get the kernel source code
 fi
 
