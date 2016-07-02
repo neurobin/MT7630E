@@ -57,7 +57,7 @@ If it is hard blocked then check if your PC has some kind of switch to turn it o
 
 If there is no block or unblocking from blocked state didn't do any good, then you should try the [patch](https://github.com/neurobin/MT7630E/wiki/Get-bluetooth-working-in-Linux-kernel--with-mt7630e). 
 
-**Without running all those codes manually you can use the bpatch script to automatically patch it for you.**
+**Without running all those commands manually, you can use the bpatch script to automatically patch it for you.**
 
 ####b. Try the bpatch script
 The **bpatch** script downloads the kernel source and tries to patch the bluetooth driver and insert the compiled module in the right place automatically. To apply patch with the **bpatch** script all you need to do is run it with root privilege.
