@@ -1,0 +1,223 @@
+#!/bin/bash
+##############################################################################################################
+# This is a simple script to patch the bluetooth driver for Linux kernel
+# to make it working with mt7630e driver
+# 
+# Author:
+#       tobiasBora (https://github.com/tobiasBora)
+# Code reviewed and improved by:
+#       Md Jahidul Hamid (https://github.com/neurobin)
+#
+##############################################################################################################
+
+p_name="$(basename "$BASH_SOURCE")"
+p_version='1.0.0'
+p_author='tobiasBora (https://github.com/tobiasBora)'
+p_c_author='Md Jahidul Hamid (https://github.com/neurobin)'
+p_bugt='https://github.com/neurobin/MT7630E/issues'
+ver_info="
+Name        : $p_name
+Version     : $p_version
+Author      : $p_author
+Co-author   : $p_c_author
+Bug report  : $p_bugt
+"
+help="
+######################### bpatch ##############################
+############# Script to patch bluetooth ################
+###############################################################
+# Usage:
+#   $p_name [ -sd [sdir], -t, -v, -h]
+#
+# Options:
+#   [ -sd [sdir] ]      : kernel soruce dir
+#   [ -t, --test ]      : compile but do not install the patch
+@   [ -u, --uninstall ] : uninstall the patch
+#   [ -h, --help ]      : show help
+#   [ -v, --version]    : show version info
+#
+# To apply the patch manually read the doc:
+#   https://github.com/neurobin/MT7630E/wiki/Get-bluetooth-working-in-Linux-kernel--with-mt7630e
+###############################################################
+"
+##############################################################################################################
+
+set -e
+BASEDIR="$(dirname "$BASH_SOURCE")"
+cd "$BASEDIR"
+
+chkroot(){
+    if (( $EUID != 0 )); then
+        printf "\n--- Sorry! Run with root privilege\n\n"
+        exit 1
+    fi
+}
+
+uninstall(){
+    echo "*** Stoping Bluetooth..."
+    service bluetooth stop ||
+    systemctl stop bluetooth.service || true
+    bdir="/lib/modules/$(uname -r)/kernel/drivers/bluetooth"
+    if [ -f "$bdir/btusb.ko.old" ];
+    then
+       echo "*** Old installation found, saving current..."
+       cp "$bdir/btusb.ko" "$bdir/btusb.ko.old2"
+       echo "*** And restoring the old one..."
+       cp "$bdir/btusb.ko.old" "$bdir/btusb.ko"
+       #mv -f "$bdir/btusb.ko.old2" "$bdir/btusb.ko.old"
+       echo "*** Done ! ***"
+    else
+       echo "--- No older installation found (skipped)..."
+    fi
+    echo '*** trying to restart bluetooth ...'
+    service bluetooth start ||
+    systemctl restart bluetooth.service
+}
+
+###################### Arg parse #########################
+
+sdir=""         # kernel source dir
+skipd=false     # whether to download the source
+test=false      # only compile the patch without installing it
+
+for op in "$@";do
+    case "$op" in
+        -v|--version)
+            echo "$ver_info"
+            shift
+            exit 0
+            ;;
+        -h|--help)
+            echo "$help"
+            shift
+            exit 0
+            ;;
+        -sd|--source-dir)
+            shift
+            if [[ "$1" != "" ]]; then
+                sdir="${1/%\//}"
+                skipd=true
+                if [[ ! -d "$sdir" ]]; then
+                    echo "--- Directory doesn't exist: $sdir "
+                    exit 1
+                fi
+                shift
+            else
+                echo "--- Arg missing for -sd option"
+                exit 1
+            fi
+            ;;
+        -t|--test)
+            test=true
+            shift
+            ;;
+        -u|--uninstall)
+            chkroot
+            uninstall
+            shift
+            exit 0
+            ;;
+        -*)
+            echo "--- Invalid option: $1"
+            shift
+            exit 1
+            ;;
+    esac
+done
+############################################################
+
+chkroot # check for root privilege
+
+echo "*** Stoping Bluetooth..."
+service bluetooth stop ||
+systemctl stop bluetooth.service || true
+
+echo "*** Installing kernel headers..."
+apt-get install build-essential linux-headers-$(uname -r)
+
+mkdir -p build/
+cd build/
+rm -rf build_$(uname -r)
+mkdir build_$(uname -r)
+cd build_$(uname -r)
+
+if ! $skipd; then
+    echo "*** Downloading kernel source..."
+    apt-get update
+    apt-get source linux-image-$(uname -r)    # Get the kernel source code
+fi
+
+echo "*** Building kernel dependencies... (may be facultative)"
+apt-get build-dep linux-image-$(uname -r) || true # Build kernel dependencies 
+
+if ! $skipd; then
+    cd $(ls -d */ | head -1)
+else
+    cd "$sdir"
+fi
+sdir="$(pwd -P)"
+
+echo "*** Copying configuration..."
+cp "/boot/config-$(uname -r)" .config
+cp "/usr/src/linux-headers-$(uname -r)/Module.symvers" .
+
+cd drivers/bluetooth/
+
+echo "*** Patching..."
+cp btusb.c btusb.c.old
+
+echo '*** Adding BTUSB_MEDIATEK definiton ...'
+if ! grep -e "^[[:blank:]]*#define BTUSB_MEDIATEK[[:blank:]].*" btusb.c >/dev/null; then
+    interestingLine="$(grep -e "^[[:blank:]]*#define BTUSB_.*0x[1248]0*[[:blank:]]*$" btusb.c | tail -1)"
+    echo "interestingLine = $interestingLine"
+    interestingNumber=$(echo "$interestingLine" | sed 's/^.*\(0x[0-9]*\)[[:blank:]]*$/\1/g')
+    echo "interestingNumber = $interestingNumber"
+    newNumber=$(printf "0x%X\n" $(($interestingNumber + $interestingNumber)))
+    echo "*** Adding the line #define BTUSB_MEDIATEK		$newNumber ..."
+    sed -i "s/$interestingLine/&\n#define BTUSB_MEDIATEK		$newNumber/" btusb.c
+else
+    echo '--- A definition for BTUSB_MEDIATEK exists (skipped)'
+fi
+
+echo '*** Adding .driver_info = BTUSB_MEDIATEK (if not exists already)...'
+sed -i "s/{ USB_DEVICE(0x0e8d, 0x763f) },/{ USB_DEVICE(0x0e8d, 0x763f), .driver_info = BTUSB_MEDIATEK },/" btusb.c
+
+echo '*** Adding BTUSB_MEDIATEK condition ...'
+#sed -i "s/set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);/&\n   }\n   if (id->driver_info \& BTUSB_MEDIATEK) {\n      set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);\n/" btusb.c
+patch='\n\tif (id->driver_info \& BTUSB_MEDIATEK) { \n\t\tset_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, \&hdev->quirks);\n\t}\n'
+if ! grep -A2 -e 'if (id->driver_info & BTUSB_MEDIATEK)' btusb.c |
+ 	grep -e 'set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, &hdev->quirks);' >/dev/null; then
+    sed -i "s/^[[:blank:]]*if[[:blank:]]*(id->driver_info & BTUSB_INTEL)/$patch\n&/" btusb.c
+else
+    echo '--- BTUSB_MEDIATEK condition was already added (skipped)'
+fi
+
+#cd ../../
+cd "$sdir"
+
+echo "*** make prepare"
+make prepare
+echo "*** make modules_prepare"
+make modules_prepare
+echo "*** make M=scripts/mod"
+make M=scripts/mod
+echo "*** make M=drivers/bluetooth/ modules"
+make M=drivers/bluetooth/ modules
+
+if ! $test; then
+    echo "*** Saving old .ko"
+    cp -f /lib/modules/$(uname -r)/kernel/drivers/bluetooth/btusb.ko /lib/modules/$(uname -r)/kernel/drivers/bluetooth/btusb.ko.old
+    echo "*** Copying new .ko"
+    cp drivers/bluetooth/btusb.ko /lib/modules/$(uname -r)/kernel/drivers/bluetooth
+fi
+
+echo "*** Starting bluetooth (maybe you would need a reboot to have bluetooth enabled)."
+echo "=====  /\ ============================================="
+echo "===   /  \     In order to have bluetooth enabled ====="
+echo "===  /  | \    you should reboot your computer.     ====="
+echo "=== /___o__\==========================================="
+echo "I will try to load it, but if nothing happens, please reboot."
+
+service bluetooth start ||
+systemctl restart bluetooth.service
+

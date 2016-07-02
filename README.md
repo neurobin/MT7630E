@@ -20,7 +20,7 @@ Easy installation package for the official driver at http://www.mediatek.com/en/
 
 First give some file execution permission:
 
-     chmod +x install test uninstall
+     chmod +x install test uninstall bpatch
      
 Now to install it, run:
 
@@ -40,15 +40,55 @@ To install with dkms:
  
 The driver will automatically load at startup...
 
-After having a working internet connection *and disabled the secure boot if you have one*, install bluetooth with
+### Bluetooth
 
-    sudo ./install_bluetooth
-	
-and to uninstall it :
+#### Test blocking state:
+For kernel 3.13 - 3.16 bluetooth may work without any extra efforts, but for higher kernels it may not work at all. A kernel patch for the bluetooth driver may be needed to get it up and working.
 
-    sudo ./uninstall_bluetooth
+If wifi works after installing the driver but bluetooth doesn't, you should first check if bluetooth is hard/soft blocked. If it is blocked then remove the block, but if that's not the case then we have a patch for you that you can apply to your kernel.
 
-3. Troubleshooting when upgrading kernel
+To check if bluetooth is hard/soft blocked, run `rfkill list`. It will show you something like this:
+
+```sh
+1: hci0: Bluetooth
+	Soft blocked: yes
+	Hard blocked: no
+```
+
+If it is soft blocked, you can unblock it with:
+
+```sh
+rfkill unblock bluetooth
+```
+If it is hard blocked then check if your PC has some kind of switch to turn it on or may be a key combination or a little haggle in the BIOS settings (you will have to investigate).
+
+If there is no block or unblocking from blocked state didn't do any good, then you should try the [patch](https://github.com/neurobin/MT7630E/wiki/Get-bluetooth-working-in-Linux-kernel--with-mt7630e). 
+
+**Without running all those codes manually you can use the bpatch script (written by tobiasBora) to automatically patch it for you.**
+
+#### Try the bpatch script
+The **bpatch** script downloads the kernel source and tries to patch the bluetooth driver and insert the compiled module in the right place automatically. To apply patch with the **bpatch** script all you need to do is run it with root privilege.
+
+```sh
+sudo ./bpatch
+```
+If you want to undo this patch:
+
+```sh
+sudo ./bpatch -u
+```
+
+If you have already downloaded the kernel source, then give the source directory path as an argument to the **bpatch** script with `-sd` option:
+
+```sh
+sudo ./bpatch -sd /path/to/kernel/source/dir
+```
+
+3. Secure Boot
+---------------
+Not being signed, this driver is not expected to work on secure boot.
+
+4. Troubleshooting when upgrading kernel
 ----------------
 ###3.1 Install script
 

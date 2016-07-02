@@ -6,11 +6,13 @@ if (( $EUID != 0 )); then
     printf "\n-----Sorry! Run with root privilege (for example with 'sudo ./install')\n\n"
     exit 1
 fi
-make
-make install
-modprobe mt7630e
-modprobe mt76xx
-echo "Wifi has been successfully installed."
-echo "If you don't have wifi yet, try to reboot."
-echo "Once Wifi works, you can install bluetooth with"
-echo "sudo ./install_bluetooth"
+#make
+#make install
+#modprobe mt7630e
+#modprobe mt76xx
+echo "
+The driver has been successfully installed.
+If you don't have wifi yet, try to reboot.
+If bluetooth doesn't work, read the bluetooth
+section in README.md file and follow through.
+"
