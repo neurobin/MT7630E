@@ -67,7 +67,7 @@ uninstall(){
        #mv -f "$bdir/btusb.ko.old2" "$bdir/btusb.ko.old"
        echo "*** Done ! ***"
     else
-       echo "--- No older installation found (skipped)..."
+       echo "... No older installation found (skipped)..."
     fi
     echo '*** trying to restart bluetooth ...'
     service bluetooth start ||
@@ -176,7 +176,7 @@ if ! grep -e "^[[:blank:]]*#define BTUSB_MEDIATEK[[:blank:]].*" btusb.c >/dev/nu
     echo "*** Adding the line #define BTUSB_MEDIATEK		$newNumber ..."
     sed -i "s/$interestingLine/&\n#define BTUSB_MEDIATEK		$newNumber/" btusb.c
 else
-    echo '--- A definition for BTUSB_MEDIATEK exists (skipped)'
+    echo '... A definition for BTUSB_MEDIATEK exists (skipped)'
 fi
 
 echo '*** Adding .driver_info = BTUSB_MEDIATEK (if not exists already)...'
@@ -189,7 +189,7 @@ if ! grep -A2 -e 'if (id->driver_info & BTUSB_MEDIATEK)' btusb.c |
  	grep -e 'set_bit(HCI_QUIRK_BROKEN_LOCAL_COMMANDS, &hdev->quirks);' >/dev/null; then
     sed -i "s/^[[:blank:]]*if[[:blank:]]*(id->driver_info & BTUSB_INTEL)/$patch\n&/" btusb.c
 else
-    echo '--- BTUSB_MEDIATEK condition was already added (skipped)'
+    echo '... BTUSB_MEDIATEK condition was already added (skipped)'
 fi
 
 #cd ../../
@@ -211,12 +211,14 @@ if ! $test; then
     cp drivers/bluetooth/btusb.ko /lib/modules/$(uname -r)/kernel/drivers/bluetooth
 fi
 
-echo "*** Starting bluetooth (maybe you would need a reboot to have bluetooth enabled)."
-echo "=====  /\ ============================================="
-echo "===   /  \     In order to have bluetooth enabled ====="
-echo "===  /  | \    you should reboot your computer.     ====="
-echo "=== /___o__\==========================================="
-echo "I will try to load it, but if nothing happens, please reboot."
+echo "
+*** Starting bluetooth (you may need a reboot to have bluetooth enabled).
+=====  /\ =============================================
+===   /  \     In order to have bluetooth enabled =====
+===  /  | \    you should reboot your computer.   =====
+=== /___o__\===========================================
+I will try to load it, but if nothing happens, please reboot.
+"
 
 service bluetooth start ||
 systemctl restart bluetooth.service

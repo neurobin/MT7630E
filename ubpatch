@@ -2,6 +2,8 @@
 set -e
 BASEDIR="$(dirname "$BASH_SOURCE")"
 cd "$BASEDIR"
+echo 'This script is outdated, use ./bpatch -u instead'
+exit 1
 if (( $EUID != 0 )); then
     printf "\n-----Sorry! Run with root privilege\n\n"
     exit 1
