@@ -2163,8 +2163,14 @@ struct rt2x00_dev {
 	 * IEEE80211 control structure.
 	 */
 	struct ieee80211_hw *hw;
+        
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+	struct ieee80211_supported_band bands[NUM_NL80211_BANDS];
+	enum nl80211_band curr_band;
+#else
 	struct ieee80211_supported_band bands[IEEE80211_NUM_BANDS];
 	enum ieee80211_band curr_band;
+#endif
 	int curr_freq;
 
 	/*

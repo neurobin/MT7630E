@@ -1863,7 +1863,11 @@ static int rt2800_agc_to_rssi(struct rt2x00_dev *rt2x00dev, u32 rxwi_w2)
 	u8 offset1;
 	u8 offset2;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+	if (rt2x00dev->curr_band == NL80211_BAND_2GHZ) {
+#else
 	if (rt2x00dev->curr_band == IEEE80211_BAND_2GHZ) {
+#endif
 		rt2x00_eeprom_read(rt2x00dev, EEPROM_RSSI_BG, &eeprom);
 		offset0 = rt2x00_get_field16(eeprom, EEPROM_RSSI_BG_OFFSET0);
 		offset1 = rt2x00_get_field16(eeprom, EEPROM_RSSI_BG_OFFSET1);
@@ -1953,7 +1957,11 @@ void rt2800_process_rxwi(struct queue_entry *entry,
 			u8 offset1;
 			u8 offset2;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+			if (rt2x00dev->curr_band == NL80211_BAND_2GHZ) {
+#else
 			if (rt2x00dev->curr_band == IEEE80211_BAND_2GHZ) {
+#endif
 				rt2x00_eeprom_read(rt2x00dev, EEPROM_RSSI_BG, &eeprom);
 				offset0 = rt2x00_get_field16(eeprom, EEPROM_RSSI_BG_OFFSET0);
 				offset1 = rt2x00_get_field16(eeprom, EEPROM_RSSI_BG_OFFSET1);
@@ -2293,8 +2301,13 @@ static void rt2800_brightness_set(struct led_classdev *led_cdev,
 	struct rt2x00_led *led =
 	    container_of(led_cdev, struct rt2x00_led, led_dev);
 	unsigned int enabled = brightness != LED_OFF;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+	unsigned int bg_mode =
+	    (enabled && led->rt2x00dev->curr_band == NL80211_BAND_2GHZ);
+#else
 	unsigned int bg_mode =
 	    (enabled && led->rt2x00dev->curr_band == IEEE80211_BAND_2GHZ);
+#endif
 	unsigned int polarity =
 		rt2x00_get_field16(led->rt2x00dev->led_mcu_reg,
 				   EEPROM_FREQ_LED_POLARITY);
@@ -2953,7 +2966,11 @@ static void rt2800_config_3572bt_ant(struct rt2x00_dev *rt2x00dev)
 	u8 led_ctrl, led_g_mode, led_r_mode;
 
 	rt2800_register_read(rt2x00dev, GPIO_SWITCH, &reg);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+	if (rt2x00dev->curr_band == NL80211_BAND_5GHZ) {
+#else
 	if (rt2x00dev->curr_band == IEEE80211_BAND_5GHZ) {
+#endif
 		rt2x00_set_field32(&reg, GPIO_SWITCH_0, 1);
 		rt2x00_set_field32(&reg, GPIO_SWITCH_1, 1);
 	} else {
@@ -3091,8 +3108,13 @@ void rt2800_config_ant(struct rt2x00_dev *rt2x00dev, struct antenna_setup *ant)
 		if (rt2x00_rt(rt2x00dev, RT3572) &&
 		    test_bit(CAPABILITY_BT_COEXIST, &rt2x00dev->cap_flags)) {
 			rt2x00_set_field8(&r3, BBP3_RX_ADC, 1);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+			rt2x00_set_field8(&r3, BBP3_RX_ANTENNA,
+				rt2x00dev->curr_band == NL80211_BAND_5GHZ);
+#else
 			rt2x00_set_field8(&r3, BBP3_RX_ANTENNA,
 				rt2x00dev->curr_band == IEEE80211_BAND_5GHZ);
+#endif
 			rt2800_set_ant_diversity(rt2x00dev, ANTENNA_B);
 		} else {
 			rt2x00_set_field8(&r3, BBP3_RX_ANTENNA, 1);
@@ -4629,7 +4651,11 @@ static int rt2800_get_gain_calibration_delta(struct rt2x00_dev *rt2x00dev)
 	 * Matching Delta value   -4   -3   -2   -1    0   +1   +2   +3   +4
 	 * Example TSSI bounds  0xF0 0xD0 0xB5 0xA0 0x88 0x45 0x25 0x15 0x00
 	 */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+	if (rt2x00dev->curr_band == NL80211_BAND_2GHZ) {
+#else
 	if (rt2x00dev->curr_band == IEEE80211_BAND_2GHZ) {
+#endif
 		rt2x00_eeprom_read(rt2x00dev, EEPROM_TSSI_BOUND_BG1, &eeprom);
 		tssi_bounds[0] = rt2x00_get_field16(eeprom,
 					EEPROM_TSSI_BOUND_BG1_MINUS4);
@@ -4723,8 +4749,13 @@ static int rt2800_get_gain_calibration_delta(struct rt2x00_dev *rt2x00dev)
 	return (i - 4) * step;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+static int rt2800_get_txpower_bw_comp(struct rt2x00_dev *rt2x00dev,
+				      enum nl80211_band band)
+#else
 static int rt2800_get_txpower_bw_comp(struct rt2x00_dev *rt2x00dev,
 				      enum ieee80211_band band)
+#endif
 {
 	u16 eeprom;
 	u8 comp_en;
@@ -4740,7 +4771,11 @@ static int rt2800_get_txpower_bw_comp(struct rt2x00_dev *rt2x00dev,
 	    !test_bit(CONFIG_CHANNEL_HT40, &rt2x00dev->flags))
 		return 0;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+	if (band == NL80211_BAND_2GHZ) {
+#else
 	if (band == IEEE80211_BAND_2GHZ) {
+#endif
 		comp_en = rt2x00_get_field16(eeprom,
 				 EEPROM_TXPOWER_DELTA_ENABLE_2G);
 		if (comp_en) {
@@ -4788,9 +4823,15 @@ static int rt2800_get_txpower_reg_delta(struct rt2x00_dev *rt2x00dev,
 	return min(delta, 0);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+static u8 rt2800_compensate_txpower(struct rt2x00_dev *rt2x00dev, int is_rate_b,
+				   enum nl80211_band band, int power_level,
+				   u8 txpower, int delta)
+#else
 static u8 rt2800_compensate_txpower(struct rt2x00_dev *rt2x00dev, int is_rate_b,
 				   enum ieee80211_band band, int power_level,
 				   u8 txpower, int delta)
+#endif
 {
 	u16 eeprom;
 	u8 criterion;
@@ -4814,7 +4855,11 @@ static u8 rt2800_compensate_txpower(struct rt2x00_dev *rt2x00dev, int is_rate_b,
 		rt2x00_eeprom_read(rt2x00dev, EEPROM_EIRP_MAX_TX_POWER,
 				   &eeprom);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+		if (band == NL80211_BAND_2GHZ)
+#else
 		if (band == IEEE80211_BAND_2GHZ)
+#endif
 			eirp_txpower_criterion = rt2x00_get_field16(eeprom,
 						 EEPROM_EIRP_MAX_TX_POWER_2GHZ);
 		else
@@ -4850,7 +4895,11 @@ static void rt2800_config_txpower(struct rt2x00_dev *rt2x00dev,
 	u16 eeprom;
 	u32 reg, offset;
 	int i, is_rate_b, delta, power_ctrl;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+	enum nl80211_band band = chan->band;
+#else
 	enum ieee80211_band band = chan->band;
+#endif
 
 	/*
 	 * Calculate HT40 compensation. For 40MHz we need to add or subtract
@@ -5186,7 +5235,11 @@ static u8 rt2800_get_default_vgc(struct rt2x00_dev *rt2x00dev)
 	u8 vgc;
 	if (rt2x00_rt(rt2x00dev, MT7630))
 		return 0;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)
+	if (rt2x00dev->curr_band == NL80211_BAND_2GHZ) {
+#else
 	if (rt2x00dev->curr_band == IEEE80211_BAND_2GHZ) {
+#endif
 		if (rt2x00_rt(rt2x00dev, RT3070) ||
 		    rt2x00_rt(rt2x00dev, RT3071) ||
 		    rt2x00_rt(rt2x00dev, RT3090) ||
