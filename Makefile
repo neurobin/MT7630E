@@ -2,7 +2,7 @@
 
 KDIR ?= /lib/modules/`uname -r`/build
 DST_DIR ?= /lib/modules/`uname -r`/kernel/drivers/net/wireless/
-PKG_VER ?= 2.0.6
+PKG_VER ?= 2.0.7
 
 all:
 	$(MAKE) -C $(KDIR) M=$(CURDIR)/rt2x00 modules
