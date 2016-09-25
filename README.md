@@ -77,6 +77,8 @@ If you have already downloaded the kernel source, then give the source directory
 sudo ./bpatch -sd /path/to/kernel/source/dir
 ```
 
+**Note:** The **bpatch** script is for debian based systems and make sure to enable source code repository before running it. For Ubuntu this [link](http://askubuntu.com/questions/158871/how-do-i-enable-the-source-code-repositories) may help you enabling the source repository.
+
 #3. Troubleshooting when upgrading kernel
 
 ###3.1 Install script
