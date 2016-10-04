@@ -1701,7 +1701,7 @@ static const struct rt2x00_ops rt2800pci_ops = {
  * RT2800pci module information.
  */
 #ifdef CONFIG_PCI
-static DEFINE_PCI_DEVICE_TABLE(rt2800pci_device_table) = {
+static const struct pci_device_id rt2800pci_device_table[] = {
 	{ PCI_DEVICE(0x14c3, 0x7630) },
 	{ PCI_DEVICE(0x14c3, 0x7650) },
 	{ 0, }
