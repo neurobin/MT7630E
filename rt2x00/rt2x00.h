@@ -52,7 +52,7 @@
 /*
  * Module information.
  */
-#define DRV_VERSION	"2.3.5"
+#define DRV_VERSION	"2.3.7"
 #define DRV_PROJECT	"http://rt2x00.serialmonkey.com"
 
 
@@ -211,7 +211,7 @@ typedef struct pci_dev 		* PPCI_DEV;
 #define SUBTYPE_AUTH                11
 #define SUBTYPE_DEAUTH              12
 #define SUBTYPE_ACTION              13
-#define SUBTYPE_ACTION_NO_ACK              14
+#define SUBTYPE_ACTION_NO_ACK       14
 
 // value domain of 802.11 CNTL frame's FC.subtype, which is b7..4 of the 1st-byte of MAC header
 #define SUBTYPE_WRAPPER       	7

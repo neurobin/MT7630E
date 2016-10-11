@@ -3047,15 +3047,15 @@ void rt2800_config_ant(struct rt2x00_dev *rt2x00dev, struct antenna_setup *ant)
 			rt2800_MT7630_bbp_write(rt2x00dev, TXBE_R5, txbe);
 
 
-			rt2800_MT7630_bbp_read(rt2x00dev, AGC1_R0, &agc_r0);
-			agc = agc_r0 & (~0x18);
-			if(ant->rx_chain_num == 2)
-				agc |= (0x8);
-			else if(ant->rx_chain_num == 1)
-				agc |= (0x0);
+		rt2800_MT7630_bbp_read(rt2x00dev, AGC1_R0, &agc_r0);
+		agc = agc_r0 & (~0x18);
+		if(ant->rx_chain_num == 2)
+			agc |= (0x8);
+		else if(ant->rx_chain_num == 1)
+			agc |= (0x0);
 
-			if (agc != agc_r0)
-				rt2800_MT7630_bbp_write(rt2x00dev, AGC1_R0, agc);
+		if (agc != agc_r0)
+			rt2800_MT7630_bbp_write(rt2x00dev, AGC1_R0, agc);
 		printk("MT7630 set Tx/Rx Ant ant->tx_chain_num=%d Ant ant->rx_chain_num=%d\n",ant->tx_chain_num,ant->rx_chain_num);
 		return;
 	}
