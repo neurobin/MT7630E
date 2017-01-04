@@ -91,7 +91,7 @@ To do so, run:
 ./install
 ```
 
-If you don't uninstall and clean, you will face problems like this: 
+If you don't uninstall, you will face problems like this: 
 ```
 modprobe: ERROR: could not insert 'mt7630e': Exec format error
 modprobe: ERROR: could not insert 'mt76xx': Exec format error
