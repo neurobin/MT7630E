@@ -88,7 +88,6 @@ If you installed the driver with the `install` script, you will have to reinstal
 To do so, run: 
 ```sh
 ./uninstall
-make clean
 ./install
 ```
 
