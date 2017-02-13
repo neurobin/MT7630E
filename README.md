@@ -11,18 +11,28 @@ Easy installation package for Mediatek MT7630E Wifi + Bluetooth Combo Linux Driv
 
 #2. Installation
 
+You need kernel headers to build drivers.
+
+As an example, on Debian and derivatives, assuming you're on an amd64 system:
+
+```sh
+sudo apt install linux-headers-amd64
+```
+
+That's all for dependencies.
+
 First give some file execution permission:
 
      chmod +x install test uninstall bpatch
-     
+
 Now to install it, run:
 
      ./install
-     
+
 To test it without installing, run:
 
      ./test
-     
+
 To uninstall, run:
 
       ./uninstall
@@ -30,7 +40,7 @@ To uninstall, run:
 To install with dkms:
 
     sudo make dkms
- 
+
 The driver will automatically load at startup...
 
 ### Bluetooth
@@ -55,7 +65,7 @@ sudo rfkill unblock bluetooth
 ```
 If it is hard blocked then check if your PC has some kind of switch to turn it on or may be a key combination or a little haggle in the BIOS settings (you will have to investigate).
 
-If there is no block or unblocking from blocked state didn't do any good, then you should try the [patch](https://github.com/neurobin/MT7630E/wiki/Get-bluetooth-working-in-Linux-kernel--with-mt7630e). 
+If there is no block or unblocking from blocked state didn't do any good, then you should try the [patch](https://github.com/neurobin/MT7630E/wiki/Get-bluetooth-working-in-Linux-kernel--with-mt7630e).
 
 **Without running all those commands manually, you can use the bpatch script to automatically patch it for you.**
 
@@ -85,19 +95,19 @@ sudo ./bpatch -sd /path/to/kernel/source/dir
 
 If you installed the driver with the `install` script, you will have to reinstall the drivers when you upgrade your kernel.
 
-To do so, run: 
+To do so, run:
 ```sh
 ./uninstall
 ./install
 ```
 
-If you don't uninstall, you will face problems like this: 
+If you don't uninstall, you will face problems like this:
 ```
 modprobe: ERROR: could not insert 'mt7630e': Exec format error
 modprobe: ERROR: could not insert 'mt76xx': Exec format error
 ```
 
-###3.2 DKMS 
+###3.2 DKMS
 
 If you install with dkms then you won't need to uninstall/install for minor kernel updates. Major kernel updates may still need update/uninstall/install though.
 
@@ -111,6 +121,5 @@ Not being signed, this driver is **not expected to work on secure boot**.
 
     The original source was taken from https://github.com/kuba-moo/mt7630e
     Some patches for extended kernel support are taken from https://github.com/benjarobin/MT7630E
-      
-**Note:** Even though the original source was taken from kuba-moo, it no longer resembles that of the original. If you want to apply a patch that works with other sources, be ware that the line number and content may or may not match i.e you will have to be careful applying patches.
 
+**Note:** Even though the original source was taken from kuba-moo, it no longer resembles that of the original. If you want to apply a patch that works with other sources, be ware that the line number and content may or may not match i.e you will have to be careful applying patches.
