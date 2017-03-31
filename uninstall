@@ -5,5 +5,5 @@ if (( $EUID != 0 )); then
     printf "\n-----Sorry! Run with root privilege\n\n"
     exit 1
 fi
-make uninstall
-make clean || echo "You can ignore 'make clean' error"
+make uninstall KERNEL=${1-$(uname -r)}
+make clean KERNEL=${1-$(uname -r)} || echo "You can ignore 'make clean' error"
