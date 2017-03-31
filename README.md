@@ -16,7 +16,7 @@ Easy installation package for Mediatek MT7630E Wifi + Bluetooth Combo Linux Driv
 As an example, on Debian and derivatives, assuming you're on an amd64 system:
 
 ```sh
-sudo apt install linux-headers-amd64
+sudo apt install build-essential linux-headers-amd64
 ```
 
 That's all for dependencies.
