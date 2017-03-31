@@ -43,7 +43,7 @@ To install with dkms:
 
 The driver will automatically load at startup...
 
-# Installing inside a chroot environment
+# Installing inside a container (chroot) environment
 
 Pass the kernel version as an argument with install or uninstall script:
 
