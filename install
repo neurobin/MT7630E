@@ -6,10 +6,11 @@ if (( $EUID != 0 )); then
     printf "\n-----Sorry! Run with root privilege (for example with 'sudo ./install')\n\n"
     exit 1
 fi
-make
-make install
-modprobe mt7630e
-modprobe mt76xx
+KERNEL=${1-$(uname -r)}
+make KERNEL=$KERNEL
+make install KERNEL=$KERNEL
+modprobe mt7630e -S $KERNEL
+modprobe mt76xx -S $KERNEL
 echo "
 The driver has been successfully installed.
 If you don't have wifi yet, try to reboot.

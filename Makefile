@@ -1,9 +1,9 @@
 .PHONY: all clean install uninstall
 
-KERNEL = `uname -r`
+KERNEL ?= `uname -r`
 KDIR ?= /lib/modules/$(KERNEL)/build
 DST_DIR ?= /lib/modules/$(KERNEL)/kernel/drivers/net/wireless/
-PKG_VER ?= 2.0.8
+PKG_VER ?= `sed -n 's/^[[:blank:]]*PACKAGE_VERSION=\([^[:blank:]]*\).*/\1/p' dkms.conf`
 
 all:
 	$(MAKE) -C $(KDIR) M=$(CURDIR)/rt2x00 modules
