@@ -11,7 +11,7 @@ Easy installation package for Mediatek MT7630E Wifi + Bluetooth Combo Linux Driv
 
 # Installation
 
-You need kernel headers to build drivers.
+**You need kernel headers to build the driver**
 
 As an example, on Debian and derivatives, assuming you're on an amd64 system:
 
@@ -42,6 +42,22 @@ To install with dkms:
     sudo make dkms
 
 The driver will automatically load at startup...
+
+# Installing inside a chroot environment
+
+Pass the kernel version as an argument with install or uninstall script:
+
+```bash
+sudo ./install kernel-version
+sudo ./uninstall kernel-version
+sudo ./test kernel-version
+```
+With `make`, the argument shall be `KERNEL=kernel-version`
+
+```bash
+sudo make dkms KERNEL=kernel-version
+sudo make install KERNEL=kernel-version
+```
 
 ### Bluetooth
 
