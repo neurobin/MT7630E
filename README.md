@@ -1,7 +1,7 @@
 Easy installation package for Mediatek MT7630E Wifi + Bluetooth Combo Linux Driver. The official driver was found at http://www.mediatek.com/en/downloads/mt7630-pcie/ (this link no longer exists)
 
 
-#1. Component
+# Component
 
 
 * rt2x00: Wi-Fi driver source code
@@ -9,29 +9,56 @@ Easy installation package for Mediatek MT7630E Wifi + Bluetooth Combo Linux Driv
 * firmware: Firmware binary code (MT7650E234.bin is for Wi-Fi, mt76x0.bin is for Bluetooth)
 
 
-#2. Installation
+# Installation
 
 First give some file execution permission:
 
-     chmod +x install test uninstall bpatch
+```bash
+chmod +x install test uninstall bpatch
+```
      
 Now to install it, run:
 
-     ./install
+```bash
+./install
+```
      
 To test it without installing, run:
 
-     ./test
+```bash
+./test
+```
      
 To uninstall, run:
 
-      ./uninstall
+```bash
+./uninstall
+```
 
 To install with dkms:
 
-    sudo make dkms
+```bash
+sudo make dkms
+```
  
-The driver will automatically load at startup...
+The driver should automatically load at startup...
+
+# Installing inside a chroot environment:
+
+Pass the kernel version as a argument with install or uninstall script:
+
+```bash
+sudo ./install kernel-version
+sudo ./uninstall kernel-version
+sudo ./test kernel-version
+```
+With `make`, the argument shall be `KERNEL=kernel-version`
+
+```bash
+sudo make dkms KERNEL=kernel-version
+sudo make install KERNEL=kernel-version
+```
+
 
 ### Bluetooth
 
@@ -39,7 +66,7 @@ For kernel 3.13 - 3.16 bluetooth may work without any extra efforts, but for hig
 
 If wifi works after installing the driver but bluetooth doesn't, you should first check if bluetooth is hard/soft blocked. If it is blocked then remove the block, but if that's not the case then we have a patch for you that you can apply to your kernel.
 
-####a. Test blocking state:
+#### a. Test blocking state:
 To check if bluetooth is hard/soft blocked, run `rfkill list`. It will show you something like this:
 
 ```sh
@@ -59,7 +86,7 @@ If there is no block or unblocking from blocked state didn't do any good, then y
 
 **Without running all those commands manually, you can use the bpatch script to automatically patch it for you.**
 
-####b. Try the bpatch script
+#### b. Try the bpatch script
 The **bpatch** script downloads the kernel source and tries to patch the bluetooth driver and insert the compiled module in the right place automatically. To apply patch with the **bpatch** script all you need to do is run it with root privilege.
 
 ```sh
@@ -79,9 +106,9 @@ sudo ./bpatch -sd /path/to/kernel/source/dir
 
 **Note:** The **bpatch** script is for debian based systems and make sure to enable source code repository before running it. For Ubuntu this [link](http://askubuntu.com/questions/158871/how-do-i-enable-the-source-code-repositories) may help you enabling the source repository.
 
-#3. Troubleshooting when upgrading kernel
+# Troubleshooting when upgrading kernel
 
-###3.1 Install script
+### Install script
 
 If you installed the driver with the `install` script, you will have to reinstall the drivers when you upgrade your kernel.
 
@@ -97,17 +124,17 @@ modprobe: ERROR: could not insert 'mt7630e': Exec format error
 modprobe: ERROR: could not insert 'mt76xx': Exec format error
 ```
 
-###3.2 DKMS 
+### DKMS 
 
 If you install with dkms then you won't need to uninstall/install for minor kernel updates. Major kernel updates may still need update/uninstall/install though.
 
 
-##Secure Boot
+## Secure Boot
 
 Not being signed, this driver is **not expected to work on secure boot**.
 
 
-##Source:
+## Source:
 
     The original source was taken from https://github.com/kuba-moo/mt7630e
     Some patches for extended kernel support are taken from https://github.com/benjarobin/MT7630E

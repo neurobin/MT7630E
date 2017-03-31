@@ -5,9 +5,10 @@ if (( $EUID != 0 )); then
     printf "\n-----Sorry! Run with root privilege\n\n"
     exit 1
 fi
-[ -f rt2x00/mt7630e.ko ] && [ -f btloader/mt76xx.ko ] || sudo -u $USER make
+KERNEL=${1-$(uname -r)}
+[ -f rt2x00/mt7630e.ko ] && [ -f btloader/mt76xx.ko ] || sudo make KERNEL=$KERNEL
 cp -v firmware/*/* /lib/firmware/
-modprobe rt2800pci
+modprobe rt2800pci -S $KERNEL
 insmod ./rt2x00/mt7630e.ko
 insmod ./btloader/mt76xx.ko
-modprobe -r rt2800pci
+modprobe -r rt2800pci -S $KERNEL
