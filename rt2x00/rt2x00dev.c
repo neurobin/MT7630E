@@ -1496,7 +1496,7 @@ int rt2x00lib_probe_dev(struct rt2x00_dev *rt2x00dev)
 #ifdef CONFIG_WIRELESS_WDS
 		    BIT(NL80211_IFTYPE_WDS) |
 #endif
-		    BIT(NL80211_IFTYPE_AP;
+		    BIT(NL80211_IFTYPE_AP);
 
 
 	rt2x00dev->hw->wiphy->flags |= WIPHY_FLAG_IBSS_RSN;
