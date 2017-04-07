@@ -1490,11 +1490,14 @@ int rt2x00lib_probe_dev(struct rt2x00_dev *rt2x00dev)
 	if (rt2x00dev->ops->bcn->entry_num > 0)
 		rt2x00dev->hw->wiphy->interface_modes |=
 		    BIT(NL80211_IFTYPE_ADHOC) |
-		    BIT(NL80211_IFTYPE_AP) |
 #ifdef CONFIG_MAC80211_MESH
 		    BIT(NL80211_IFTYPE_MESH_POINT) |
 #endif
-		    BIT(NL80211_IFTYPE_WDS);
+#ifdef CONFIG_WIRELESS_WDS
+		    BIT(NL80211_IFTYPE_WDS) |
+#endif
+		    BIT(NL80211_IFTYPE_AP);
+
 
 	rt2x00dev->hw->wiphy->flags |= WIPHY_FLAG_IBSS_RSN;
 
