@@ -29,7 +29,7 @@ run 'rfkill list' and paste the output in this block
 ```
 
 # What didn't work?
-[please be specific]
+[please be specific. Do not post excessive error message (only the part that makes sense), you can post the complete error message in the 'Error code' section below.]
 
 
 
@@ -38,7 +38,7 @@ run 'rfkill list' and paste the output in this block
 
 
 # What did you try?
-[please include all details, every small step is important]
+[please include all details, every small step is important, if already explained above, just use ^^^ or 'see above']
 
 
 # Error code:
@@ -49,3 +49,5 @@ run 'rfkill list' and paste the output in this block
 #block ends
 ```
 
+# Additional info
+[Put any additional information here or leave it blank]
