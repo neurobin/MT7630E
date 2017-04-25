@@ -6,13 +6,13 @@ OS | <put your os name here>
 Kernel version | <kernel version here (the output of `uname -r`)>
 New install | <yes/no>
 DKMS | <yes/no>
-Compiler | <include version e.g: gcc-5.4.0>
+Compiler | < include version e.g: gcc-5.4.0 >
 
 # Devince info
 
-Device ID: <run `lsusb |grep -i 'mediatek\|foxcon'` to get it (e.g *0e8d:763f*)>
+**Device ID:** <run `lsusb |grep -i 'mediatek\|foxcon'` to get it (e.g *0e8d:763f*)>
 
-General info:
+**General info:**
 
 ```
 #block starts
@@ -20,7 +20,7 @@ run 'lspci -vv | grep -A20 -i mediatek' and paste the output in this block
 #block ends
 ```
 
-Bluetooth stats:
+**Bluetooth stats:**
 
 ```
 #block starts
