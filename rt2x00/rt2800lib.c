@@ -1926,10 +1926,18 @@ void rt2800_process_rxwi(struct queue_entry *entry,
 		//rt2x00_desc_read(rxwi, 1, &word);
 
 		if (pRxWI->RxWISGI)
-			rxdesc->flags |= RX_FLAG_SHORT_GI;
+			#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+				rxdesc->flags |= RX_FLAG_DUP_VALIDATED;
+			#else
+				rxdesc->flags |= RX_FLAG_SHORT_GI;
+			#endif
 
 		if (pRxWI->RxWIBW)
-			rxdesc->flags |= RX_FLAG_40MHZ;
+			#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+				rxdesc->flags |= RX_FLAG_PN_VALIDATED;
+			#else
+				rxdesc->flags |= RX_FLAG_40MHZ;
+			#endif
 
 		/*
 		 * Detect RX rate, always use MCS as signal type.
@@ -2004,10 +2012,18 @@ void rt2800_process_rxwi(struct queue_entry *entry,
 		rt2x00_desc_read(rxwi, 1, &word);
 
 		if (rt2x00_get_field32(word, RXWI_W1_SHORT_GI))
-			rxdesc->flags |= RX_FLAG_SHORT_GI;
+			#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+				rxdesc->flags |= RX_FLAG_DUP_VALIDATED;
+			#else
+				rxdesc->flags |= RX_FLAG_SHORT_GI;
+			#endif
 
 		if (rt2x00_get_field32(word, RXWI_W1_BW))
-			rxdesc->flags |= RX_FLAG_40MHZ;
+			#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+				rxdesc->flags |= RX_FLAG_PN_VALIDATED;
+			#else
+				rxdesc->flags |= RX_FLAG_40MHZ;
+			#endif
 
 		/*
 		 * Detect RX rate, always use MCS as signal type.

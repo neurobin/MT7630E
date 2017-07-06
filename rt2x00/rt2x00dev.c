@@ -787,10 +787,17 @@ void rt2x00lib_rxdone(struct queue_entry *entry, gfp_t gfp)
 	 * Translate the signal to the correct bitrate index.
 	 */
 	rate_idx = rt2x00lib_rxdone_read_signal(rt2x00dev, &rxdesc);
-	if (rxdesc.rate_mode == RATE_MODE_HT_MIX ||
-	    rxdesc.rate_mode == RATE_MODE_HT_GREENFIELD)
-		rxdesc.flags |= RX_FLAG_HT;
 
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+	    if (rxdesc.rate_mode == RATE_MODE_HT_MIX || 
+			rxdesc.rate_mode == RATE_MODE_HT_GREENFIELD)
+			rxdesc.flags |= RX_FLAG_AMPDU_DETAILS;
+	#else
+		if (rxdesc.rate_mode == RATE_MODE_HT_MIX ||
+			rxdesc.rate_mode == RATE_MODE_HT_GREENFIELD)
+			rxdesc.flags |= RX_FLAG_HT;
+	#endif
+	
 	/*
 	 * Check if this is a beacon, and more frames have been
 	 * buffered while we were in powersaving mode.
