@@ -1,5 +1,5 @@
 
-**This repository is not maintained by @neurobin any more. If anyone is interested to take over, please leave a comment at #90**
+# This repository is not maintained by @neurobin any more. If anyone is interested to take over, please leave a comment at #90**
 
 Easy installation package for Mediatek MT7630E Wifi + Bluetooth Combo Linux Driver. The official driver was found at http://www.mediatek.com/en/downloads/mt7630-pcie/ (this link no longer exists)
 
