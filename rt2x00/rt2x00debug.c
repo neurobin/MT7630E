@@ -174,7 +174,7 @@ void rt2x00debug_dump_frame(struct rt2x00_dev *rt2x00dev,
 
 	getnstimeofday(&ts);
 	timestamp.tv_sec = ts.tv_sec;
-	timestamp.tv_usec = ts.tv_nsec;
+	timestamp.tv_usec = ts.tv_nsec / 1000;
 	
 	if (skb_queue_len(&intf->frame_dump_skbqueue) > 20) {
 		rt2x00_dbg(rt2x00dev, "txrx dump queue length exceeded\n");
