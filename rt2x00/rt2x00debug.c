@@ -166,13 +166,16 @@ void rt2x00debug_dump_frame(struct rt2x00_dev *rt2x00dev,
 	struct sk_buff *skbcopy;
 	struct rt2x00dump_hdr *dump_hdr;
 	struct timeval timestamp;
+	struct timespec ts;
 	u32 data_len;
 
 	if (likely(!test_bit(FRAME_DUMP_FILE_OPEN, &intf->frame_dump_flags)))
 		return;
 
-	do_gettimeofday(&timestamp);
-
+	getnstimeofday(&ts);
+	timestamp.tv_sec = ts.tv_sec;
+	timestamp.tv_usec = ts.tv_nsec;
+	
 	if (skb_queue_len(&intf->frame_dump_skbqueue) > 20) {
 		rt2x00_dbg(rt2x00dev, "txrx dump queue length exceeded\n");
 		return;
@@ -771,6 +774,12 @@ void rt2x00debug_deregister(struct rt2x00_dev *rt2x00dev)
 
 	skb_queue_purge(&intf->frame_dump_skbqueue);
 
+#ifdef CONFIG_RT2X00_LIB_CRYPTO
+	debugfs_remove(intf->crypto_stats_entry);
+#endif
+	debugfs_remove(intf->queue_stats_entry);
+	debugfs_remove(intf->queue_frame_dump_entry);
+	debugfs_remove(intf->queue_folder);
 #ifdef CONFIG_RT2X00_LIB_CRYPTO
 	debugfs_remove(intf->crypto_stats_entry);
 #endif
