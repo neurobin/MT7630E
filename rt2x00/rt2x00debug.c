@@ -166,12 +166,18 @@ void rt2x00debug_dump_frame(struct rt2x00_dev *rt2x00dev,
 	struct sk_buff *skbcopy;
 	struct rt2x00dump_hdr *dump_hdr;
 	struct timeval timestamp;
+	struct timespec ts;
 	u32 data_len;
 
 	if (likely(!test_bit(FRAME_DUMP_FILE_OPEN, &intf->frame_dump_flags)))
 		return;
 
-	do_gettimeofday(&timestamp);
+	//DEPRECATED in linux 5.0
+	//do_gettimeofday(&timestamp);
+	
+	getnstimeofday(&ts);
+	timestamp.tv_sec = ts.tv_sec;
+	timestamp.tv_usec = ts.tv_nsec;
 
 	if (skb_queue_len(&intf->frame_dump_skbqueue) > 20) {
 		rt2x00_dbg(rt2x00dev, "txrx dump queue length exceeded\n");
