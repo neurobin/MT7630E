@@ -38,8 +38,10 @@
 #define MAX_LINE_LENGTH 64
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
 #define TIMESTRUCT timeval
+#define TIMEFUNC do_gettimeofday
 #else
 #define TIMESTRUCT timespec
+#define TIMEFUNC getnstimeofday
 #endif
 
 struct rt2x00debug_crypto {
@@ -175,8 +177,8 @@ void rt2x00debug_dump_frame(struct rt2x00_dev *rt2x00dev,
 
 	if (likely(!test_bit(FRAME_DUMP_FILE_OPEN, &intf->frame_dump_flags)))
 		return;
-
-	getnstimeofday(&timestamp);
+	
+	TIMEFUNC(&timestamp);
 
 	if (skb_queue_len(&intf->frame_dump_skbqueue) > 20) {
 		rt2x00_dbg(rt2x00dev, "txrx dump queue length exceeded\n");
