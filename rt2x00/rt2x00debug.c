@@ -36,6 +36,13 @@
 #include "rt2x00dump.h"
 
 #define MAX_LINE_LENGTH 64
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
+#define TIMESTRUCT timeval
+#define TIMEFUNC do_gettimeofday
+#else
+#define TIMESTRUCT timespec
+#define TIMEFUNC getnstimeofday
+#endif
 
 struct rt2x00debug_crypto {
 	unsigned long success;
@@ -165,13 +172,13 @@ void rt2x00debug_dump_frame(struct rt2x00_dev *rt2x00dev,
 	struct skb_frame_desc *skbdesc = get_skb_frame_desc(skb);
 	struct sk_buff *skbcopy;
 	struct rt2x00dump_hdr *dump_hdr;
-	struct timeval timestamp;
+	struct TIMESTRUCT timestamp;
 	u32 data_len;
 
 	if (likely(!test_bit(FRAME_DUMP_FILE_OPEN, &intf->frame_dump_flags)))
 		return;
-
-	do_gettimeofday(&timestamp);
+	
+	TIMEFUNC(&timestamp);
 
 	if (skb_queue_len(&intf->frame_dump_skbqueue) > 20) {
 		rt2x00_dbg(rt2x00dev, "txrx dump queue length exceeded\n");
@@ -201,7 +208,7 @@ void rt2x00debug_dump_frame(struct rt2x00_dev *rt2x00dev,
 	dump_hdr->queue_index = skbdesc->entry->queue->qid;
 	dump_hdr->entry_index = skbdesc->entry->entry_idx;
 	dump_hdr->timestamp_sec = cpu_to_le32(timestamp.tv_sec);
-	dump_hdr->timestamp_usec = cpu_to_le32(timestamp.tv_usec);
+	dump_hdr->timestamp_usec = cpu_to_le32(timestamp.tv_nsec *1000);
 
 	if (!(skbdesc->flags & SKBDESC_DESC_IN_SKB))
 		memcpy(skb_put(skbcopy, skbdesc->desc_len), skbdesc->desc,
