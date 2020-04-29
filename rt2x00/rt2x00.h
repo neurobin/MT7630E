@@ -95,7 +95,7 @@ typedef char 				* PNDIS_BUFFER;
 typedef struct pci_dev 		* PPCI_DEV;
 
 #undef __inline
-#define __inline		static inline
+#define __inline
 #define IN
 #define OUT
 #define INOUT
