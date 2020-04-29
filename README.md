@@ -145,4 +145,4 @@ Not being signed, this driver is **not expected to work on secure boot**.
 
 # Pull Requests
 
-Please do all pull requests against the master branch. The default (`release`) branch is for releases only.
+Please do all pull requests against the master branch. The `release` branch is for releases only.
