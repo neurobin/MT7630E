@@ -39,6 +39,9 @@
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
 #define TIMESTRUCT timeval
 #define TIMEFUNC do_gettimeofday
+#elif  LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
+#define TIMESTRUCT timespec64
+#define TIMEFUNC ktime_get_real_ts64
 #else
 #define TIMESTRUCT timespec
 #define TIMEFUNC getnstimeofday
